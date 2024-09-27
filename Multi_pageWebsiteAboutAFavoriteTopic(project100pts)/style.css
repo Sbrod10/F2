@@ -1,0 +1,118 @@
+.rectangle{
+    width: 800px;
+    height:50px;
+}
+
+
+
+#front{
+    margin-top: 50px;
+}
+
+#Rb{
+    margin-top:;
+}
+
+#Wr{
+    margin-top:
+}
+
+#Qb{
+    
+}
+
+#Te{
+    
+}
+
+
+#links:hover{
+    background-color:yellow;
+   
+}
+
+
+
+.rankings-wrapper {
+    display: flex;
+    justify-content: space-between; 
+}
+
+.container {
+    width: 45%; 
+    padding: 10px;
+    border: 1px solid black; 
+}
+
+
+
+
+
+
+
+.topLink{
+    font-size: 30px;
+    color:white;
+}
+
+.blue{
+    background-color:black;
+}
+.full{
+    background-color:lightblue;
+}
+
+.link{
+    color:white;
+}
+
+
+
+
+
+
+#Tua:hover .caption{
+    visibility:visible;
+}
+
+#Snoop:hover .caption{
+   visibility:visible;
+}
+
+#Heat:hover .caption{
+    visibility:visible;
+   
+}
+
+
+
+
+
+/* Other styles */
+
+
+img{
+    height:250px;
+    width:250px;
+}
+
+.content{
+    margin-left:25%;
+}
+
+.gallery-item{
+    border:2px dashed black;
+    width:300px;
+    margin:25px;
+    padding:10px;
+    
+}
+.caption{
+    visibility:hidden;
+}
+
+body{
+    font-family:Helvetica;
+    font-size: 16px;
+    background-color:AliceBlue;
+}
