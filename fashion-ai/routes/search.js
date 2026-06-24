@@ -5,18 +5,18 @@ const router = express.Router();
 
 // Retail stores database for realistic price comparison
 const RETAILERS = [
-  { name: 'ASOS', url: 'https://www.asos.com', priceModifier: 1.0, badge: 'Free Returns', logo: '🛍️' },
-  { name: 'Zara', url: 'https://www.zara.com', priceModifier: 1.2, badge: 'Trending', logo: '✨' },
-  { name: 'H&M', url: 'https://www.hm.com', priceModifier: 0.7, badge: 'Budget Pick', logo: '💚' },
-  { name: 'Nordstrom', url: 'https://www.nordstrom.com', priceModifier: 2.2, badge: 'Premium', logo: '⭐' },
-  { name: 'Macy\'s', url: 'https://www.macys.com', priceModifier: 1.5, badge: 'Sale Often', logo: '🏪' },
-  { name: 'Shein', url: 'https://www.shein.com', priceModifier: 0.3, badge: 'Lowest Price', logo: '💰' },
-  { name: 'Urban Outfitters', url: 'https://www.urbanoutfitters.com', priceModifier: 1.4, badge: 'Trendy', logo: '🎨' },
-  { name: 'Forever 21', url: 'https://www.forever21.com', priceModifier: 0.5, badge: 'Value', logo: '🌟' },
-  { name: 'Revolve', url: 'https://www.revolve.com', priceModifier: 1.8, badge: 'Influencer Fav', logo: '📸' },
-  { name: 'SSENSE', url: 'https://www.ssense.com', priceModifier: 3.5, badge: 'Luxury', logo: '💎' },
-  { name: 'PrettyLittleThing', url: 'https://www.prettylittlething.com', priceModifier: 0.45, badge: 'Fast Fashion', logo: '🌸' },
-  { name: 'Anthropologie', url: 'https://www.anthropologie.com', priceModifier: 1.9, badge: 'Boho Chic', logo: '🌿' }
+  { name: 'ASOS', searchUrl: 'https://www.asos.com/us/search/?q={q}', priceModifier: 1.0, badge: 'Free Returns', logo: '🛍️' },
+  { name: 'Zara', searchUrl: 'https://www.zara.com/us/en/search?searchTerm={q}', priceModifier: 1.2, badge: 'Trending', logo: '✨' },
+  { name: 'H&M', searchUrl: 'https://www2.hm.com/en_us/search-results.html?q={q}', priceModifier: 0.7, badge: 'Budget Pick', logo: '💚' },
+  { name: 'Nordstrom', searchUrl: 'https://www.nordstrom.com/sr?origin=keywordsearch&keyword={q}', priceModifier: 2.2, badge: 'Premium', logo: '⭐' },
+  { name: "Macy's", searchUrl: 'https://www.macys.com/shop/featured/{q}', priceModifier: 1.5, badge: 'Sale Often', logo: '🏪' },
+  { name: 'Shein', searchUrl: 'https://www.shein.com/search?q={q}', priceModifier: 0.3, badge: 'Lowest Price', logo: '💰' },
+  { name: 'Urban Outfitters', searchUrl: 'https://www.urbanoutfitters.com/search?q={q}', priceModifier: 1.4, badge: 'Trendy', logo: '🎨' },
+  { name: 'Forever 21', searchUrl: 'https://www.forever21.com/us/shop/catalog/category/f21/search?q={q}', priceModifier: 0.5, badge: 'Value', logo: '🌟' },
+  { name: 'Revolve', searchUrl: 'https://www.revolve.com/r/Search.jsp?q={q}', priceModifier: 1.8, badge: 'Influencer Fav', logo: '📸' },
+  { name: 'SSENSE', searchUrl: 'https://www.ssense.com/en-us/search?q={q}', priceModifier: 3.5, badge: 'Luxury', logo: '💎' },
+  { name: 'PrettyLittleThing', searchUrl: 'https://www.prettylittlething.us/catalogsearch/result/?q={q}', priceModifier: 0.45, badge: 'Fast Fashion', logo: '🌸' },
+  { name: 'Anthropologie', searchUrl: 'https://www.anthropologie.com/search?q={q}', priceModifier: 1.9, badge: 'Boho Chic', logo: '🌿' }
 ];
 
 function parseBasePrice(priceStr) {
@@ -42,7 +42,7 @@ function generateRetailerResults(itemName, itemType, priceRange) {
       retailer: retailer.name,
       logo: retailer.logo,
       badge: retailer.badge,
-      url: `${retailer.url}/search?q=${encodeURIComponent(itemName)}`,
+      url: retailer.searchUrl.replace('{q}', encodeURIComponent(itemName)),
       price: `$${price}`,
       originalPrice: originalPrice ? `$${originalPrice}` : null,
       discount: discount ? `${discount}% OFF` : null,
