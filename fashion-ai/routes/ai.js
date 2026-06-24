@@ -59,7 +59,7 @@ router.post('/recommend', optionalAuth, async (req, res) => {
     const userId = req.user?.userId;
     const userContext = buildUserContext(userId);
 
-    const prompt = `You are StyleAI, an expert fashion stylist and trend forecaster. A user is looking for fashion recommendations.
+    const prompt = `You are StyleComplex, an expert fashion stylist and trend forecaster. A user is looking for fashion recommendations.
 
 USER PREFERENCES:
 - Occasion: ${occasion || 'Not specified'}
@@ -151,7 +151,7 @@ router.post('/scan-environment', optionalAuth, upload.single('image'), async (re
       imageSource = { type: 'base64', media_type: mediaType, data: base64Data };
     }
 
-    const prompt = `You are StyleAI, an expert fashion consultant with deep knowledge of dress codes, environments, and style contexts.
+    const prompt = `You are StyleComplex, an expert fashion consultant with deep knowledge of dress codes, environments, and style contexts.
 
 Analyze this image and identify:
 1. The environment/setting (restaurant, office, beach, club, outdoor, casual gathering, formal event, etc.)
@@ -243,7 +243,7 @@ router.post('/analyze-outfit', optionalAuth, upload.single('image'), async (req,
       imageSource = { type: 'base64', media_type: mediaType, data: base64Data };
     }
 
-    const prompt = `You are StyleAI, a world-class fashion critic and stylist. Analyze this outfit image and provide detailed feedback.
+    const prompt = `You are StyleComplex, a world-class fashion critic and stylist. Analyze this outfit image and provide detailed feedback.
 
 Respond in this EXACT JSON format only:
 {
@@ -313,7 +313,7 @@ router.post('/style-chat', optionalAuth, async (req, res) => {
     const userId = req.user?.userId;
     const userContext = buildUserContext(userId);
 
-    const systemPrompt = `You are StyleAI, a friendly and expert AI fashion stylist. You help people find their perfect style, discover clothing items, and make fashion decisions. You're knowledgeable about trends, brands, price points, and styling techniques. Keep responses concise (under 150 words) but valuable.${userContext}`;
+    const systemPrompt = `You are StyleComplex, a friendly and expert AI fashion stylist. You help people find their perfect style, discover clothing items, and make fashion decisions. You're knowledgeable about trends, brands, price points, and styling techniques. Keep responses concise (under 150 words) but valuable.${userContext}`;
 
     const messages = [
       ...conversationHistory.slice(-6).map(m => ({ role: m.role, content: m.content })),

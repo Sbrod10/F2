@@ -3,19 +3,19 @@ const API_BASE = '/api';
 
 // ─── Auth State ───
 const Auth = {
-  getToken: () => localStorage.getItem('styleai_token'),
-  getUser: () => { try { return JSON.parse(localStorage.getItem('styleai_user')); } catch { return null; } },
-  isLoggedIn: () => !!localStorage.getItem('styleai_token'),
+  getToken: () => localStorage.getItem('stylecomplex_token'),
+  getUser: () => { try { return JSON.parse(localStorage.getItem('stylecomplex_user')); } catch { return null; } },
+  isLoggedIn: () => !!localStorage.getItem('stylecomplex_token'),
   setSession: (token, user) => {
-    localStorage.setItem('styleai_token', token);
-    localStorage.setItem('styleai_user', JSON.stringify(user));
+    localStorage.setItem('stylecomplex_token', token);
+    localStorage.setItem('stylecomplex_user', JSON.stringify(user));
   },
   clearSession: () => {
-    localStorage.removeItem('styleai_token');
-    localStorage.removeItem('styleai_user');
+    localStorage.removeItem('stylecomplex_token');
+    localStorage.removeItem('stylecomplex_user');
   },
   headers: () => {
-    const token = localStorage.getItem('styleai_token');
+    const token = localStorage.getItem('stylecomplex_token');
     return {
       'Content-Type': 'application/json',
       ...(token ? { 'Authorization': `Bearer ${token}` } : {})

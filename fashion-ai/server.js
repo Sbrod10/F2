@@ -34,6 +34,6 @@ app.use((err, req, res, next) => {
 });
 
 app.listen(PORT, () => {
-  console.log(`StyleAI server running on http://localhost:${PORT}`);
+  console.log(`StyleComplex server running on http://localhost:${PORT}`);
   console.log(`Email: ${process.env.RESEND_API_KEY ? 'enabled' : 'disabled (no RESEND_API_KEY)'}`);
 });

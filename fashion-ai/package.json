@@ -1,7 +1,7 @@
 {
-  "name": "fashion-ai-discovery",
+  "name": "stylecomplex",
   "version": "1.0.0",
-  "description": "AI-powered fashion discovery platform with style recommendations, price comparison, and machine learning",
+  "description": "AI-Powered Fashion Discovery Platform",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",

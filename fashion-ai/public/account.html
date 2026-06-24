@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Account — StyleAI</title>
+  <title>Account — StyleComplex</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/style.css">
@@ -252,7 +252,7 @@
       <div class="account-left-brand">
         <a href="index.html" class="logo">
           <div class="logo-icon">✨</div>
-          <span class="logo-text">StyleAI</span>
+          <span class="logo-text">StyleComplex</span>
         </a>
         <h2 style="margin-top:32px;font-size:1.6rem;">Your Personal<br><span class="gradient-text">AI Stylist</span></h2>
         <p style="margin-top:12px;font-size:0.9rem;line-height:1.7;">Join thousands of people who've discovered their perfect style with AI-powered recommendations.</p>
@@ -330,7 +330,7 @@
         </div>
 
         <button class="btn btn-primary btn-full btn-lg" id="login-btn" onclick="handleLogin()">
-          Sign In to StyleAI
+          Sign In to StyleComplex
         </button>
 
         <div class="divider-text">or continue with</div>
@@ -551,7 +551,7 @@
           stylePreferences: selectedStyles
         });
         Auth.setSession(data.token, data.user);
-        showToast(`Welcome to StyleAI, ${firstName}! 🎉`, 'success');
+        showToast(`Welcome to StyleComplex, ${firstName}! 🎉`, 'success');
         setTimeout(() => window.location.href = 'profile.html', 800);
       } catch (err) {
         showError('register', err.message);
