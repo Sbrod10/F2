@@ -46,7 +46,7 @@ router.post('/register', async (req, res) => {
 
     const token = jwt.sign({ userId, email: user.email, name: user.name }, JWT_SECRET, { expiresIn: '7d' });
 
-    sendWelcomeEmail(user.email, user.name).catch(() => {});
+    sendWelcomeEmail(user.email, user.name).catch(err => console.error('Email error:', err?.message));
 
     const { password: _, ...safeUser } = user;
     res.status(201).json({ token, user: safeUser, message: 'Account created successfully' });
