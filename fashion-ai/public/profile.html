@@ -1,0 +1,720 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Style Profile — StyleAI</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    body { padding-top: 72px; }
+
+    .profile-layout {
+      display: grid;
+      grid-template-columns: 280px 1fr;
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 32px 40px;
+      gap: 32px;
+      min-height: calc(100vh - 72px);
+    }
+
+    .profile-sidebar {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .profile-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 24px;
+      text-align: center;
+    }
+
+    .avatar {
+      width: 72px;
+      height: 72px;
+      border-radius: 50%;
+      background: var(--gradient-1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.8rem;
+      margin: 0 auto 12px;
+      font-weight: 800;
+      color: white;
+    }
+
+    .profile-name { font-size: 1.1rem; font-weight: 700; }
+    .profile-email { font-size: 0.8rem; color: var(--text-muted); margin-top: 2px; }
+
+    .ml-progress {
+      margin-top: 16px;
+      padding-top: 16px;
+      border-top: 1px solid var(--border);
+    }
+
+    .ml-label { font-size: 0.75rem; color: var(--text-muted); margin-bottom: 6px; display: flex; justify-content: space-between; }
+
+    .nav-menu {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+    }
+
+    .nav-menu-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 14px 20px;
+      cursor: pointer;
+      transition: var(--transition);
+      font-size: 0.9rem;
+      font-weight: 500;
+      border-bottom: 1px solid var(--border);
+      color: var(--text-secondary);
+    }
+
+    .nav-menu-item:last-child { border-bottom: none; }
+    .nav-menu-item:hover { background: rgba(255,255,255,0.03); color: var(--text-primary); }
+    .nav-menu-item.active { background: rgba(139,92,246,0.08); color: var(--purple-light); }
+    .nav-menu-item .icon { font-size: 1.1rem; }
+
+    .profile-main { display: flex; flex-direction: column; gap: 24px; }
+
+    .section-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 28px;
+    }
+
+    .section-card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+    }
+
+    .stat-card {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 16px;
+      text-align: center;
+    }
+
+    .stat-card .stat-icon { font-size: 1.4rem; margin-bottom: 6px; }
+    .stat-card .stat-value { font-size: 1.4rem; font-weight: 800; background: var(--gradient-1); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+    .stat-card .stat-label { font-size: 0.75rem; color: var(--text-muted); margin-top: 2px; }
+
+    .insight-card {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 12px;
+      margin-top: 16px;
+    }
+
+    .insight-item {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 14px;
+    }
+
+    .insight-label { font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 4px; }
+    .insight-value { font-size: 0.95rem; font-weight: 700; }
+
+    .personality-card {
+      background: linear-gradient(135deg, rgba(139,92,246,0.1), rgba(236,72,153,0.07));
+      border: 1px solid rgba(139,92,246,0.2);
+      border-radius: var(--radius);
+      padding: 20px;
+      text-align: center;
+      margin-top: 16px;
+    }
+
+    .personality-label { font-size: 0.75rem; color: var(--text-muted); margin-bottom: 4px; }
+    .personality-type { font-size: 1.2rem; font-weight: 800; background: var(--gradient-1); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+
+    .saved-outfits-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      gap: 16px;
+    }
+
+    .saved-outfit-card {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 16px;
+      transition: var(--transition);
+    }
+
+    .saved-outfit-card:hover { border-color: var(--border-glow); }
+
+    .saved-outfit-name { font-size: 0.9rem; font-weight: 700; margin-bottom: 4px; }
+    .saved-outfit-meta { font-size: 0.78rem; color: var(--text-muted); margin-bottom: 10px; }
+    .saved-outfit-items { display: flex; flex-direction: column; gap: 4px; }
+    .saved-outfit-item { font-size: 0.8rem; color: var(--text-secondary); display: flex; align-items: center; gap: 6px; }
+
+    .pref-chips { display: flex; flex-wrap: wrap; gap: 8px; }
+
+    .pref-chip {
+      padding: 6px 14px;
+      border-radius: 999px;
+      font-size: 0.85rem;
+      cursor: pointer;
+      border: 1px solid var(--border);
+      color: var(--text-secondary);
+      background: transparent;
+      transition: var(--transition);
+    }
+
+    .pref-chip.active {
+      background: rgba(139,92,246,0.15);
+      border-color: var(--purple);
+      color: var(--purple-light);
+    }
+
+    .history-item {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 12px 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .history-item:last-child { border-bottom: none; }
+    .history-icon { font-size: 1.2rem; }
+    .history-desc { flex: 1; font-size: 0.85rem; }
+    .history-time { font-size: 0.75rem; color: var(--text-muted); }
+
+    .page-section { display: none; }
+    .page-section.active { display: block; }
+
+    @media (max-width: 900px) {
+      .profile-layout { grid-template-columns: 1fr; padding: 16px 20px; }
+      .profile-sidebar { display: none; }
+      .stats-grid { grid-template-columns: 1fr 1fr; }
+      .insight-card { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <nav class="navbar" id="navbar">
+    <a href="index.html" class="logo">
+      <div class="logo-icon">✨</div>
+      <span class="logo-text">StyleAI</span>
+    </a>
+    <ul class="nav-links">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="discover.html">Discover</a></li>
+      <li><a href="results.html">Results</a></li>
+      <li><a href="profile.html" class="active">My Style</a></li>
+    </ul>
+    <div class="nav-cta">
+      <a href="discover.html" class="btn btn-primary btn-sm">✨ Discover</a>
+      <button class="btn btn-ghost btn-sm" onclick="logout()">Sign Out</button>
+    </div>
+    <button class="hamburger"><span></span><span></span><span></span></button>
+  </nav>
+  <div class="mobile-menu" id="mobile-menu">
+    <button id="mobile-close" style="position:absolute;top:20px;right:20px;background:none;border:none;color:var(--text-secondary);font-size:28px;cursor:pointer;">✕</button>
+    <a href="index.html">Home</a>
+    <a href="discover.html">Discover</a>
+    <a href="results.html">Results</a>
+    <a href="profile.html">My Style</a>
+    <button onclick="logout()" style="background:none;border:none;color:var(--text-secondary);font-size:1.4rem;cursor:pointer;">Sign Out</button>
+  </div>
+
+  <div class="profile-layout">
+    <!-- SIDEBAR -->
+    <aside class="profile-sidebar">
+      <div class="profile-card">
+        <div class="avatar" id="avatar">?</div>
+        <div class="profile-name" id="profile-name">Loading...</div>
+        <div class="profile-email" id="profile-email"></div>
+        <div class="ml-progress">
+          <div class="ml-label">
+            <span>AI Learning Progress</span>
+            <span id="ml-percent">0%</span>
+          </div>
+          <div class="progress-bar">
+            <div class="progress-fill" id="ml-fill" style="width:0%"></div>
+          </div>
+          <div style="font-size:0.7rem;color:var(--text-muted);margin-top:4px;">The more you use StyleAI, the smarter it gets!</div>
+        </div>
+      </div>
+
+      <div class="nav-menu">
+        <div class="nav-menu-item active" onclick="showSection('overview', this)">
+          <span class="icon">📊</span> Overview
+        </div>
+        <div class="nav-menu-item" onclick="showSection('outfits', this)">
+          <span class="icon">👗</span> Saved Outfits
+        </div>
+        <div class="nav-menu-item" onclick="showSection('preferences', this)">
+          <span class="icon">🎨</span> Style Preferences
+        </div>
+        <div class="nav-menu-item" onclick="showSection('insights', this)">
+          <span class="icon">🧠</span> AI Insights
+        </div>
+        <div class="nav-menu-item" onclick="showSection('history', this)">
+          <span class="icon">📜</span> History
+        </div>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:8px;">
+        <a href="discover.html" class="btn btn-primary">✨ New Discovery</a>
+        <button class="btn btn-ghost" onclick="logout()">Sign Out</button>
+      </div>
+    </aside>
+
+    <!-- MAIN -->
+    <main class="profile-main">
+
+      <!-- OVERVIEW -->
+      <div class="page-section active" id="section-overview">
+        <div class="section-card">
+          <div class="section-card-header">
+            <h2 id="welcome-title">Welcome back!</h2>
+            <div class="badge badge-green" id="member-badge">Member</div>
+          </div>
+          <div class="stats-grid" id="stats-grid">
+            <div class="stat-card"><div class="stat-icon">🔍</div><div class="stat-value" id="stat-searches">0</div><div class="stat-label">Style Searches</div></div>
+            <div class="stat-card"><div class="stat-icon">📸</div><div class="stat-value" id="stat-scans">0</div><div class="stat-label">Env. Scans</div></div>
+            <div class="stat-card"><div class="stat-icon">💬</div><div class="stat-value" id="stat-chats">0</div><div class="stat-label">AI Chats</div></div>
+            <div class="stat-card"><div class="stat-icon">❤️</div><div class="stat-value" id="stat-saved">0</div><div class="stat-label">Saved Items</div></div>
+          </div>
+        </div>
+
+        <div class="section-card">
+          <div class="section-card-header">
+            <h3>🧠 Your Style DNA</h3>
+            <span class="badge badge-purple">AI Analyzed</span>
+          </div>
+          <div id="style-dna">
+            <p style="color:var(--text-muted);font-size:0.9rem;">Start discovering to build your style profile. The AI needs at least 5 searches to learn your taste!</p>
+          </div>
+        </div>
+
+        <div class="section-card">
+          <div class="section-card-header">
+            <h3>🚀 Quick Actions</h3>
+          </div>
+          <div class="grid-2" style="gap:12px;">
+            <a href="discover.html" class="card" style="cursor:pointer;text-decoration:none;display:flex;align-items:center;gap:12px;padding:16px;">
+              <span style="font-size:1.5rem;">🎛️</span>
+              <div><div style="font-weight:600;font-size:0.9rem;">Filter & Discover</div><div style="font-size:0.8rem;color:var(--text-muted);">Use AI style filters</div></div>
+            </a>
+            <a href="discover.html#scan" class="card" style="cursor:pointer;text-decoration:none;display:flex;align-items:center;gap:12px;padding:16px;" onclick="document.cookie='mode=scan'">
+              <span style="font-size:1.5rem;">📸</span>
+              <div><div style="font-weight:600;font-size:0.9rem;">Scan Environment</div><div style="font-size:0.8rem;color:var(--text-muted);">Upload a location photo</div></div>
+            </a>
+            <a href="results.html" class="card" style="cursor:pointer;text-decoration:none;display:flex;align-items:center;gap:12px;padding:16px;">
+              <span style="font-size:1.5rem;">💰</span>
+              <div><div style="font-weight:600;font-size:0.9rem;">Compare Prices</div><div style="font-size:0.8rem;color:var(--text-muted);">Search across retailers</div></div>
+            </a>
+            <div class="card" style="cursor:pointer;display:flex;align-items:center;gap:12px;padding:16px;" onclick="showSection('insights', document.querySelector('.nav-menu-item:nth-child(4)'))">
+              <span style="font-size:1.5rem;">🧠</span>
+              <div><div style="font-weight:600;font-size:0.9rem;">View AI Insights</div><div style="font-size:0.8rem;color:var(--text-muted);">See what AI learned</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SAVED OUTFITS -->
+      <div class="page-section" id="section-outfits">
+        <div class="section-card">
+          <div class="section-card-header">
+            <h2>❤️ Saved Outfits</h2>
+            <a href="discover.html" class="btn btn-primary btn-sm">+ Add More</a>
+          </div>
+          <div id="saved-outfits-container">
+            <div style="text-align:center;padding:60px 20px;">
+              <div style="font-size:3rem;margin-bottom:16px;">👗</div>
+              <h3>No saved outfits yet</h3>
+              <p style="margin-top:8px;max-width:300px;margin-left:auto;margin-right:auto;">Discover outfits and click the ❤️ Save button to build your wardrobe collection.</p>
+              <a href="discover.html" class="btn btn-primary" style="margin-top:20px;">Start Discovering</a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- PREFERENCES -->
+      <div class="page-section" id="section-preferences">
+        <div class="section-card">
+          <div class="section-card-header">
+            <h2>🎨 Style Preferences</h2>
+            <button class="btn btn-primary btn-sm" id="save-prefs-btn" onclick="savePreferences()">Save Changes</button>
+          </div>
+          <p style="font-size:0.9rem;color:var(--text-muted);margin-bottom:20px;">Updating your preferences helps StyleAI give you better recommendations.</p>
+
+          <div style="margin-bottom:24px;">
+            <div class="form-label" style="margin-bottom:12px;">Style Aesthetics</div>
+            <div class="pref-chips" id="pref-styles">
+              <div class="pref-chip" data-group="styles" data-value="Casual">Casual</div>
+              <div class="pref-chip" data-group="styles" data-value="Minimalist">Minimalist</div>
+              <div class="pref-chip" data-group="styles" data-value="Streetwear">Streetwear</div>
+              <div class="pref-chip" data-group="styles" data-value="Bohemian">Bohemian</div>
+              <div class="pref-chip" data-group="styles" data-value="Classic">Classic</div>
+              <div class="pref-chip" data-group="styles" data-value="Edgy">Edgy</div>
+              <div class="pref-chip" data-group="styles" data-value="Romantic">Romantic</div>
+              <div class="pref-chip" data-group="styles" data-value="Athleisure">Athleisure</div>
+              <div class="pref-chip" data-group="styles" data-value="Vintage">Vintage</div>
+              <div class="pref-chip" data-group="styles" data-value="Y2K">Y2K</div>
+              <div class="pref-chip" data-group="styles" data-value="Dark Academia">Dark Academia</div>
+              <div class="pref-chip" data-group="styles" data-value="Cottagecore">Cottagecore</div>
+            </div>
+          </div>
+
+          <div class="divider"></div>
+
+          <div class="grid-2" style="gap:16px;margin-top:20px;">
+            <div class="form-group">
+              <label class="form-label">Budget Range</label>
+              <select class="form-select" id="pref-budget">
+                <option>$0 - $50 (Budget)</option>
+                <option>$50 - $150 (Mid-range)</option>
+                <option>$150 - $300 (Premium)</option>
+                <option>$300+ (Luxury)</option>
+                <option>No limit</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Gender Expression</label>
+              <select class="form-select" id="pref-gender">
+                <option value="">Prefer not to say</option>
+                <option>Feminine</option>
+                <option>Masculine</option>
+                <option>Androgynous</option>
+                <option>Non-binary</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Body Type</label>
+              <select class="form-select" id="pref-body">
+                <option value="">Prefer not to say</option>
+                <option>Petite</option>
+                <option>Tall</option>
+                <option>Curvy</option>
+                <option>Athletic</option>
+                <option>Plus Size</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Material Preference</label>
+              <select class="form-select" id="pref-material">
+                <option value="">No preference</option>
+                <option>Natural (Cotton, Linen)</option>
+                <option>Luxe (Silk, Cashmere)</option>
+                <option>Denim</option>
+                <option>Knit/Cozy</option>
+                <option>Synthetic/Stretch</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- AI INSIGHTS -->
+      <div class="page-section" id="section-insights">
+        <div class="section-card">
+          <div class="section-card-header">
+            <h2>🧠 AI Style Insights</h2>
+            <div class="badge badge-purple">Machine Learning</div>
+          </div>
+
+          <div id="insights-content">
+            <div style="text-align:center;padding:40px;">
+              <div class="spinner" style="margin:0 auto;"></div>
+              <p style="margin-top:16px;">Analyzing your style patterns...</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="section-card">
+          <div class="section-card-header">
+            <h3>📈 How Machine Learning Works Here</h3>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:16px;">
+            <div style="display:flex;gap:14px;align-items:flex-start;">
+              <div style="width:32px;height:32px;min-width:32px;border-radius:8px;background:rgba(139,92,246,0.15);display:flex;align-items:center;justify-content:center;font-size:14px;">1</div>
+              <div><strong>Data Collection:</strong> Every search, filter choice, saved item, and scan is recorded with your permission.</div>
+            </div>
+            <div style="display:flex;gap:14px;align-items:flex-start;">
+              <div style="width:32px;height:32px;min-width:32px;border-radius:8px;background:rgba(139,92,246,0.15);display:flex;align-items:center;justify-content:center;font-size:14px;">2</div>
+              <div><strong>Pattern Recognition:</strong> AI identifies your most frequent style choices, color preferences, and occasion types.</div>
+            </div>
+            <div style="display:flex;gap:14px;align-items:flex-start;">
+              <div style="width:32px;height:32px;min-width:32px;border-radius:8px;background:rgba(139,92,246,0.15);display:flex;align-items:center;justify-content:center;font-size:14px;">3</div>
+              <div><strong>Personalized Context:</strong> Your history is included in every AI prompt, making each new recommendation increasingly tailored.</div>
+            </div>
+            <div style="display:flex;gap:14px;align-items:flex-start;">
+              <div style="width:32px;height:32px;min-width:32px;border-radius:8px;background:rgba(139,92,246,0.15);display:flex;align-items:center;justify-content:center;font-size:14px;">4</div>
+              <div><strong>Continuous Improvement:</strong> The more you engage, the more the AI understands and refines your personal style profile.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- HISTORY -->
+      <div class="page-section" id="section-history">
+        <div class="section-card">
+          <div class="section-card-header">
+            <h2>📜 Activity History</h2>
+            <span class="badge badge-purple">Last 10 Activities</span>
+          </div>
+          <div id="history-list">
+            <p style="color:var(--text-muted);text-align:center;padding:40px;">No activity yet. Start discovering!</p>
+          </div>
+        </div>
+      </div>
+
+    </main>
+  </div>
+
+  <script src="js/app.js"></script>
+  <script>
+    let profileData = null;
+    let insightsData = null;
+    let selectedPrefs = [];
+
+    // Redirect if not logged in
+    if (!Auth.isLoggedIn()) {
+      window.location.href = 'account.html';
+    }
+
+    async function loadProfile() {
+      try {
+        const data = await API.get('/user/profile');
+        profileData = data;
+        renderProfile(data);
+
+        const ins = await API.get('/user/insights');
+        insightsData = ins.insights;
+        renderInsights(ins.insights);
+      } catch (err) {
+        if (err.message.includes('403') || err.message.includes('401')) {
+          Auth.clearSession();
+          window.location.href = 'account.html';
+        }
+        showToast(err.message, 'error');
+      }
+    }
+
+    function renderProfile(data) {
+      const user = data.user;
+      const stats = data.stats;
+
+      // Avatar
+      const initials = user.name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase();
+      document.getElementById('avatar').textContent = initials;
+      document.getElementById('profile-name').textContent = user.name;
+      document.getElementById('profile-email').textContent = user.email;
+      document.getElementById('welcome-title').textContent = `Welcome back, ${user.name.split(' ')[0]}!`;
+
+      // Member badge
+      const memberSince = new Date(user.createdAt);
+      const days = Math.floor((Date.now() - memberSince) / 86400000);
+      document.getElementById('member-badge').textContent = days === 0 ? '🆕 New Member' : `Member ${days}d`;
+
+      // Stats
+      document.getElementById('stat-searches').textContent = stats.totalSearches;
+      document.getElementById('stat-scans').textContent = stats.environmentScans;
+      document.getElementById('stat-chats').textContent = stats.chatMessages;
+      document.getElementById('stat-saved').textContent = stats.savedItems;
+
+      // Saved outfits
+      if (user.outfitHistory?.length > 0) {
+        const container = document.getElementById('saved-outfits-container');
+        container.innerHTML = `<div class="saved-outfits-grid">${user.outfitHistory.map(outfit => `
+          <div class="saved-outfit-card">
+            <div class="saved-outfit-name">${outfit.outfitName || 'Outfit'}</div>
+            <div class="saved-outfit-meta">Saved ${timeAgo(outfit.savedAt)}</div>
+            <div class="saved-outfit-items">
+              ${(outfit.items || []).slice(0, 3).map(item => `
+                <div class="saved-outfit-item">
+                  <span>•</span> <span>${item.name}</span>
+                </div>
+              `).join('')}
+              ${outfit.items?.length > 3 ? `<div style="font-size:0.78rem;color:var(--text-muted);">+${outfit.items.length - 3} more items</div>` : ''}
+            </div>
+            <div style="margin-top:10px;display:flex;gap:6px;">
+              ${renderColorSwatches(outfit.colorPalette)}
+            </div>
+            <div style="margin-top:10px;">
+              <button class="btn btn-primary btn-sm btn-full" onclick="viewOutfit('${outfit.outfitName}')">View Prices →</button>
+            </div>
+          </div>
+        `).join('')}</div>`;
+      }
+
+      // Preferences chips
+      selectedPrefs = user.stylePreferences || [];
+      document.querySelectorAll('.pref-chip').forEach(chip => {
+        if (selectedPrefs.includes(chip.dataset.value)) chip.classList.add('active');
+        chip.addEventListener('click', () => {
+          chip.classList.toggle('active');
+          const val = chip.dataset.value;
+          if (chip.classList.contains('active')) {
+            if (!selectedPrefs.includes(val)) selectedPrefs.push(val);
+          } else {
+            selectedPrefs = selectedPrefs.filter(s => s !== val);
+          }
+        });
+      });
+    }
+
+    function renderInsights(insights) {
+      if (!insights) return;
+
+      const mlPercent = insights.learningProgress || 0;
+      document.getElementById('ml-percent').textContent = `${mlPercent}%`;
+      document.getElementById('ml-fill').style.width = `${mlPercent}%`;
+
+      // Style DNA section
+      const dnaEl = document.getElementById('style-dna');
+      if (insights.totalInteractions >= 3) {
+        dnaEl.innerHTML = `
+          <div class="personality-card">
+            <div class="personality-label">Your Style Personality</div>
+            <div class="personality-type">${insights.personalityType}</div>
+          </div>
+          <div class="insight-card">
+            <div class="insight-item">
+              <div class="insight-label">Top Style</div>
+              <div class="insight-value">${insights.topStyle}</div>
+            </div>
+            <div class="insight-item">
+              <div class="insight-label">Fav Color</div>
+              <div class="insight-value">${insights.topColor}</div>
+            </div>
+            <div class="insight-item">
+              <div class="insight-label">Top Occasion</div>
+              <div class="insight-value">${insights.topOccasion}</div>
+            </div>
+          </div>
+        `;
+      } else {
+        dnaEl.innerHTML = `
+          <div style="text-align:center;padding:20px;">
+            <div style="font-size:2rem;margin-bottom:8px;">🌱</div>
+            <p>Your AI profile is still growing. Make ${5 - insights.totalInteractions} more searches to unlock your Style DNA!</p>
+            <div class="progress-bar" style="margin-top:12px;"><div class="progress-fill" style="width:${(insights.totalInteractions / 5) * 100}%"></div></div>
+            <div style="font-size:0.8rem;color:var(--text-muted);margin-top:6px;">${insights.totalInteractions}/5 interactions</div>
+          </div>
+        `;
+      }
+
+      // Insights section
+      const insightsEl = document.getElementById('insights-content');
+      insightsEl.innerHTML = `
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:20px;padding:16px;background:rgba(139,92,246,0.08);border:1px solid rgba(139,92,246,0.15);border-radius:var(--radius);">
+          <div style="font-size:2rem;">🤖</div>
+          <div>
+            <div style="font-weight:700;margin-bottom:2px;">Learning Progress: ${mlPercent}%</div>
+            <div style="font-size:0.85rem;color:var(--text-muted);">${mlPercent < 50 ? 'Keep exploring to improve your AI recommendations!' : mlPercent < 80 ? 'AI is getting to know your style well!' : 'AI knows your style inside and out!'}</div>
+          </div>
+        </div>
+
+        <div class="insight-card" style="grid-template-columns: repeat(3, 1fr);">
+          <div class="insight-item">
+            <div class="insight-label">Total Activities</div>
+            <div class="insight-value" style="font-size:1.4rem;font-weight:800;background:var(--gradient-1);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">${insights.totalInteractions}</div>
+          </div>
+          <div class="insight-item">
+            <div class="insight-label">Top Style</div>
+            <div class="insight-value">${insights.topStyle}</div>
+          </div>
+          <div class="insight-item">
+            <div class="insight-label">Personality</div>
+            <div class="insight-value" style="font-size:0.8rem;">${insights.personalityType}</div>
+          </div>
+        </div>
+
+        ${insights.recentHistory?.length ? `
+          <div style="margin-top:20px;">
+            <h4 style="margin-bottom:12px;">Recent Activity</h4>
+            <div class="history-list" id="history-list">
+              ${insights.recentHistory.map(item => `
+                <div class="history-item">
+                  <span class="history-icon">${getActivityIcon(item.type)}</span>
+                  <div class="history-desc">${getActivityLabel(item)}</div>
+                  <span class="history-time">${timeAgo(item.timestamp)}</span>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+        ` : ''}
+      `;
+    }
+
+    function getActivityIcon(type) {
+      const icons = { recommendation: '✨', environment_scan: '📸', chat: '💬', outfit_saved: '❤️' };
+      return icons[type] || '🔍';
+    }
+
+    function getActivityLabel(item) {
+      if (item.type === 'recommendation') return `Searched for ${item.query || 'outfits'}`;
+      if (item.type === 'environment_scan') return `Scanned ${item.setting || 'environment'}`;
+      if (item.type === 'chat') return `Chatted: "${(item.query || '').slice(0, 40)}..."`;
+      return item.type;
+    }
+
+    function timeAgo(timestamp) {
+      if (!timestamp) return '';
+      const diff = Date.now() - new Date(timestamp);
+      if (diff < 60000) return 'just now';
+      if (diff < 3600000) return `${Math.floor(diff/60000)}m ago`;
+      if (diff < 86400000) return `${Math.floor(diff/3600000)}h ago`;
+      return `${Math.floor(diff/86400000)}d ago`;
+    }
+
+    async function savePreferences() {
+      const btn = document.getElementById('save-prefs-btn');
+      btn.classList.add('btn-loading');
+      btn.disabled = true;
+      try {
+        await API.put('/user/preferences', {
+          stylePreferences: selectedPrefs,
+          budget: document.getElementById('pref-budget').value,
+          gender: document.getElementById('pref-gender').value,
+          bodyType: document.getElementById('pref-body').value,
+          materialPreference: document.getElementById('pref-material').value
+        });
+        showToast('Preferences saved — AI will use these for better recommendations! 🧠', 'success');
+      } catch (err) {
+        showToast(err.message, 'error');
+      } finally {
+        btn.classList.remove('btn-loading');
+        btn.disabled = false;
+      }
+    }
+
+    function showSection(name, el) {
+      document.querySelectorAll('.page-section').forEach(s => s.classList.remove('active'));
+      document.getElementById(`section-${name}`).classList.add('active');
+      document.querySelectorAll('.nav-menu-item').forEach(i => i.classList.remove('active'));
+      if (el) el.classList.add('active');
+    }
+
+    function viewOutfit(name) {
+      showToast('Go to Discover and generate outfits to compare prices', 'info');
+    }
+
+    loadProfile();
+  </script>
+</body>
+</html>

@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Price Results — StyleAI</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    body { padding-top: 72px; }
+
+    .results-header {
+      background: var(--bg-secondary);
+      border-bottom: 1px solid var(--border);
+      padding: 24px 40px;
+    }
+
+    .results-body { padding: 32px 40px; max-width: 1400px; margin: 0 auto; }
+
+    .item-comparison {
+      margin-bottom: 48px;
+    }
+
+    .item-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .item-title-group { display: flex; align-items: center; gap: 14px; }
+    .item-type-pill {
+      padding: 4px 12px;
+      background: rgba(139,92,246,0.12);
+      border: 1px solid rgba(139,92,246,0.2);
+      border-radius: 999px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--purple-light);
+    }
+
+    .retailers-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 14px;
+      margin-bottom: 24px;
+    }
+
+    .retailer-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 16px;
+      transition: var(--transition);
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .retailer-card:hover {
+      border-color: var(--border-glow);
+      transform: translateY(-3px);
+      box-shadow: var(--shadow-glow);
+    }
+
+    .retailer-card.best-price { border-color: rgba(16,185,129,0.3); background: rgba(16,185,129,0.03); }
+
+    .retailer-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .retailer-name-row { display: flex; align-items: center; gap: 6px; }
+    .retailer-logo { font-size: 1.1rem; }
+    .retailer-name { font-size: 0.85rem; font-weight: 700; }
+
+    .retailer-price { font-size: 1.4rem; font-weight: 900; }
+    .retailer-price.best { color: var(--success); }
+
+    .retailer-original { font-size: 0.8rem; color: var(--text-muted); text-decoration: line-through; }
+    .retailer-discount { font-size: 0.75rem; font-weight: 700; color: var(--success); }
+
+    .retailer-meta { display: flex; flex-direction: column; gap: 3px; }
+    .retailer-meta span { font-size: 0.75rem; color: var(--text-muted); }
+
+    .retailer-actions { margin-top: 4px; }
+
+    .out-of-stock { opacity: 0.5; }
+    .out-of-stock .retailer-price { color: var(--text-muted); }
+
+    .similar-section {
+      margin-top: 24px;
+      padding-top: 24px;
+      border-top: 1px solid var(--border);
+    }
+
+    .similar-section h4 { margin-bottom: 14px; }
+
+    .similar-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 12px;
+    }
+
+    .similar-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 16px;
+      transition: var(--transition);
+      cursor: pointer;
+    }
+
+    .similar-card:hover { border-color: var(--border-glow); }
+
+    .similar-name { font-size: 0.9rem; font-weight: 600; margin-bottom: 4px; }
+    .similar-meta { font-size: 0.8rem; color: var(--text-muted); margin-bottom: 8px; }
+
+    .price-category-badges {
+      display: flex;
+      gap: 4px;
+      flex-wrap: wrap;
+    }
+
+    .summary-bar {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 24px 32px;
+      margin-bottom: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 24px;
+      flex-wrap: wrap;
+    }
+
+    .summary-stat { text-align: center; }
+    .summary-stat .value { font-size: 1.5rem; font-weight: 800; background: var(--gradient-1); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+    .summary-stat .label { font-size: 0.75rem; color: var(--text-muted); margin-top: 2px; }
+
+    .outfit-overview {
+      background: linear-gradient(135deg, rgba(139,92,246,0.08), rgba(236,72,153,0.05));
+      border: 1px solid rgba(139,92,246,0.15);
+      border-radius: var(--radius-lg);
+      padding: 24px;
+      margin-bottom: 32px;
+    }
+
+    .filter-bar {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 24px;
+      flex-wrap: wrap;
+    }
+
+    .sort-select {
+      padding: 8px 14px;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      color: var(--text-primary);
+      font-size: 0.85rem;
+      outline: none;
+      font-family: inherit;
+      cursor: pointer;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 80px 40px;
+    }
+
+    @media (max-width: 768px) {
+      .results-header, .results-body { padding: 20px; }
+      .summary-bar { flex-direction: column; align-items: flex-start; }
+    }
+  </style>
+</head>
+<body>
+  <nav class="navbar" id="navbar">
+    <a href="index.html" class="logo">
+      <div class="logo-icon">✨</div>
+      <span class="logo-text">StyleAI</span>
+    </a>
+    <ul class="nav-links">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="discover.html">Discover</a></li>
+      <li><a href="results.html" class="active">Results</a></li>
+      <li><a href="profile.html" class="nav-user-link hidden">My Style</a></li>
+    </ul>
+    <div class="nav-cta">
+      <a href="account.html" class="btn btn-secondary btn-sm nav-auth-link">Sign In</a>
+      <a href="account.html?tab=register" class="btn btn-primary btn-sm nav-auth-link">Get Started</a>
+      <a href="profile.html" class="btn btn-secondary btn-sm nav-user-link hidden">👤 <span class="nav-username">Profile</span></a>
+      <button class="btn btn-ghost btn-sm nav-user-link hidden" onclick="logout()">Sign Out</button>
+    </div>
+    <button class="hamburger"><span></span><span></span><span></span></button>
+  </nav>
+  <div class="mobile-menu" id="mobile-menu">
+    <button id="mobile-close" style="position:absolute;top:20px;right:20px;background:none;border:none;color:var(--text-secondary);font-size:28px;cursor:pointer;">✕</button>
+    <a href="index.html">Home</a>
+    <a href="discover.html">Discover</a>
+    <a href="results.html">Results</a>
+    <a href="account.html">Account</a>
+    <a href="profile.html">My Style</a>
+  </div>
+
+  <div id="app">
+    <!-- Populated by JS -->
+  </div>
+
+  <script src="js/app.js"></script>
+  <script>
+    let currentOutfit = null;
+    let priceResults = null;
+    let sortOrder = 'price-asc';
+
+    async function init() {
+      currentOutfit = getResults('active_outfit');
+
+      if (!currentOutfit) {
+        document.getElementById('app').innerHTML = `
+          <div class="empty-state">
+            <div style="font-size:4rem;margin-bottom:20px;">🔍</div>
+            <h2>No Outfit Selected</h2>
+            <p style="margin-top:10px;max-width:400px;margin-left:auto;margin-right:auto;">Go back to the Discover page, generate outfit recommendations, then click "Compare Prices" on any outfit.</p>
+            <a href="discover.html" class="btn btn-primary btn-lg" style="margin-top:24px;">Go to Discover →</a>
+          </div>
+        `;
+        return;
+      }
+
+      renderOutfitOverview();
+      await loadPrices();
+    }
+
+    function renderOutfitOverview() {
+      document.getElementById('app').innerHTML = `
+        <div class="results-header">
+          <div style="max-width:1400px;margin:0 auto;">
+            <div class="flex-between flex-wrap gap-16">
+              <div>
+                <div style="font-size:0.8rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:4px;">Price Comparison</div>
+                <h1 style="font-size:1.6rem;">${currentOutfit.outfitName || 'Your Outfit'}</h1>
+                <p style="margin-top:4px;font-size:0.9rem;">${currentOutfit.description || ''}</p>
+              </div>
+              <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+                <a href="discover.html" class="btn btn-secondary btn-sm">← Back to Discover</a>
+                <button class="btn btn-primary btn-sm" onclick="saveFullOutfit()">❤️ Save Outfit</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="results-body">
+          <div id="outfit-meta" class="outfit-overview">
+            <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap;">
+              ${renderColorSwatches(currentOutfit.colorPalette)}
+              ${(currentOutfit.occasions || []).map(o => `<span class="badge badge-purple">${o}</span>`).join('')}
+              ${currentOutfit.vibe ? `<span class="badge badge-pink">${currentOutfit.vibe}</span>` : ''}
+              ${currentOutfit.seasonality ? `<span class="badge badge-gold">${currentOutfit.seasonality}</span>` : ''}
+            </div>
+            ${currentOutfit.stylistTip ? `
+              <div style="margin-top:12px;font-size:0.9rem;">
+                <span style="color:var(--gold-light);font-weight:600;">💡 Stylist Tip: </span>${currentOutfit.stylistTip}
+              </div>
+            ` : ''}
+          </div>
+
+          <div id="summary-section"></div>
+
+          <div class="filter-bar">
+            <select class="sort-select" onchange="setSortOrder(this.value)">
+              <option value="price-asc">Sort: Price Low → High</option>
+              <option value="price-desc">Sort: Price High → Low</option>
+              <option value="rating">Sort: Best Rated</option>
+            </select>
+            <button class="btn btn-ghost btn-sm" onclick="filterInStock()">✅ In Stock Only</button>
+            <button class="btn btn-ghost btn-sm" onclick="filterDeals()">🔥 Deals Only</button>
+            <button class="btn btn-ghost btn-sm" onclick="clearFilters()">✕ Clear Filters</button>
+          </div>
+
+          <div id="price-results-container">
+            <div style="display:flex;align-items:center;justify-content:center;padding:60px;gap:16px;">
+              <div class="spinner"></div>
+              <span style="color:var(--text-muted);">Searching 12+ retailers for the best prices...</span>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    async function loadPrices() {
+      try {
+        const items = currentOutfit.items || [];
+        const data = await API.post('/search/prices', { items });
+        priceResults = data.results;
+
+        renderSummary(data.summary);
+        renderPriceResults(data.results);
+      } catch (err) {
+        document.getElementById('price-results-container').innerHTML = `
+          <div class="card text-center" style="padding:40px;">
+            <p style="font-size:2rem;margin-bottom:12px;">⚠️</p>
+            <h3>Couldn't load prices</h3>
+            <p style="margin-top:8px;">${err.message}</p>
+          </div>
+        `;
+      }
+    }
+
+    function renderSummary(summary) {
+      const section = document.getElementById('summary-section');
+      if (!section || !summary) return;
+
+      section.innerHTML = `
+        <div class="summary-bar">
+          <div class="summary-stat">
+            <div class="value">${summary.totalItems}</div>
+            <div class="label">Items Searched</div>
+          </div>
+          <div class="summary-stat">
+            <div class="value">12+</div>
+            <div class="label">Retailers Scanned</div>
+          </div>
+          <div class="summary-stat">
+            <div class="value">${summary.cheapestOutfitTotal}</div>
+            <div class="label">Cheapest Combo</div>
+          </div>
+          <div style="display:flex;align-items:center;gap:12px;">
+            <div class="badge badge-green">🔄 Live Prices</div>
+            <div class="badge badge-purple">🤖 AI Sorted</div>
+          </div>
+        </div>
+      `;
+    }
+
+    let showInStockOnly = false;
+    let showDealsOnly = false;
+
+    function setSortOrder(val) { sortOrder = val; renderPriceResults(priceResults); }
+    function filterInStock() { showInStockOnly = !showInStockOnly; renderPriceResults(priceResults); }
+    function filterDeals() { showDealsOnly = !showDealsOnly; renderPriceResults(priceResults); }
+    function clearFilters() { showInStockOnly = false; showDealsOnly = false; sortOrder = 'price-asc'; renderPriceResults(priceResults); }
+
+    function parsePrice(str) { const m = str?.match(/\$(\d+)/); return m ? parseInt(m[1]) : 999; }
+
+    function sortRetailers(retailers) {
+      let filtered = [...retailers];
+      if (showInStockOnly) filtered = filtered.filter(r => r.inStock);
+      if (showDealsOnly) filtered = filtered.filter(r => r.discount);
+
+      if (sortOrder === 'price-asc') filtered.sort((a, b) => parsePrice(a.price) - parsePrice(b.price));
+      else if (sortOrder === 'price-desc') filtered.sort((a, b) => parsePrice(b.price) - parsePrice(a.price));
+      else if (sortOrder === 'rating') filtered.sort((a, b) => b.rating - a.rating);
+
+      return filtered;
+    }
+
+    function renderPriceResults(results) {
+      if (!results) return;
+      const container = document.getElementById('price-results-container');
+
+      let html = '';
+      results.forEach(result => {
+        const sorted = sortRetailers(result.retailers);
+        const bestPrice = sorted.find(r => r.inStock)?.price || sorted[0]?.price;
+
+        html += `
+          <div class="item-comparison">
+            <div class="item-header">
+              <div class="item-title-group">
+                <span class="item-type-pill">${result.type || 'Item'}</span>
+                <h3>${result.item}</h3>
+              </div>
+              <div style="display:flex;align-items:center;gap:12px;">
+                <div style="text-align:right;">
+                  <div style="font-size:0.75rem;color:var(--text-muted);">Best Price</div>
+                  <div style="font-size:1.2rem;font-weight:800;color:var(--success);">${bestPrice || 'N/A'}</div>
+                </div>
+                <a href="https://www.google.com/search?q=${encodeURIComponent(result.searchQuery || result.item)}" target="_blank" rel="noopener" class="btn btn-ghost btn-sm">🔍 Google</a>
+              </div>
+            </div>
+
+            <div class="retailers-grid">
+              ${sorted.map((retailer, i) => `
+                <div class="retailer-card ${i === 0 && retailer.inStock ? 'best-price' : ''} ${!retailer.inStock ? 'out-of-stock' : ''}"
+                     onclick="openRetailer('${retailer.url}')">
+                  <div class="retailer-top">
+                    <div class="retailer-name-row">
+                      <span class="retailer-logo">${retailer.logo}</span>
+                      <div>
+                        <div class="retailer-name">${retailer.retailer}</div>
+                        ${i === 0 && retailer.inStock ? '<div style="font-size:0.65rem;color:var(--success);font-weight:700;">BEST PRICE</div>' : ''}
+                      </div>
+                    </div>
+                    <span class="badge ${retailer.inStock ? 'badge-green' : 'badge-red'}" style="font-size:0.65rem;">
+                      ${retailer.inStock ? '✓ In Stock' : '✗ OOS'}
+                    </span>
+                  </div>
+
+                  <div>
+                    <div class="retailer-price ${i === 0 && retailer.inStock ? 'best' : ''}">${retailer.price}</div>
+                    ${retailer.originalPrice ? `<div class="retailer-original">${retailer.originalPrice}</div>` : ''}
+                    ${retailer.discount ? `<div class="retailer-discount">${retailer.discount}</div>` : ''}
+                  </div>
+
+                  <div class="retailer-meta">
+                    ${renderStars(retailer.rating)} <span style="font-size:0.7rem;color:var(--text-muted);">(${retailer.reviews.toLocaleString()})</span>
+                    <span>${retailer.shipping}</span>
+                    <span>Delivery: ${retailer.deliveryDays} days</span>
+                  </div>
+
+                  <div class="retailer-actions">
+                    <div class="btn btn-primary btn-sm btn-full" style="pointer-events:none;${!retailer.inStock ? 'opacity:0.4;' : ''}">
+                      ${retailer.inStock ? 'Shop Now →' : 'Out of Stock'}
+                    </div>
+                  </div>
+                </div>
+              `).join('')}
+            </div>
+
+            ${result.similarItems?.length ? `
+              <div class="similar-section">
+                <h4>Similar Items at Different Price Points</h4>
+                <div class="similar-grid">
+                  ${result.similarItems.map(item => `
+                    <div class="similar-card" onclick="window.open('${item.retailerUrl}', '_blank')">
+                      <div class="similar-name">${item.name}</div>
+                      <div class="similar-meta">at ${item.retailer}</div>
+                      <div style="display:flex;align-items:center;justify-content:space-between;">
+                        <span style="font-size:1.1rem;font-weight:800;color:var(--text-primary);">${item.price}</span>
+                        <span class="badge ${getPriceBadgeClass(item.priceCategory)}">${getPriceCategoryLabel(item.priceCategory)}</span>
+                      </div>
+                      <p style="font-size:0.78rem;color:var(--text-muted);margin-top:6px;">${item.description}</p>
+                      ${renderStars(item.rating)}
+                    </div>
+                  `).join('')}
+                </div>
+              </div>
+            ` : ''}
+          </div>
+        `;
+      });
+
+      container.innerHTML = html || '<div class="empty-state"><p>No results to display.</p></div>';
+    }
+
+    function getPriceBadgeClass(cat) {
+      const map = { budget: 'badge-green', 'mid-range': 'badge-purple', premium: 'badge-gold', luxury: 'badge-pink' };
+      return map[cat] || 'badge-purple';
+    }
+
+    function getPriceCategoryLabel(cat) {
+      const map = { budget: '💚 Budget', 'mid-range': '✨ Mid', premium: '⭐ Premium', luxury: '💎 Luxury' };
+      return map[cat] || cat;
+    }
+
+    function openRetailer(url) {
+      window.open(url, '_blank', 'noopener');
+    }
+
+    async function saveFullOutfit() {
+      if (!Auth.isLoggedIn()) {
+        showToast('Sign in to save outfits', 'info');
+        setTimeout(() => window.location.href = 'account.html', 1500);
+        return;
+      }
+      try {
+        await API.post('/user/save-outfit', { outfit: currentOutfit });
+        showToast('Outfit saved to your profile! ❤️', 'success');
+      } catch (err) {
+        showToast(err.message, 'error');
+      }
+    }
+
+    init();
+  </script>
+</body>
+</html>

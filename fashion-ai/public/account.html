@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Account — StyleAI</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    body {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      background:
+        radial-gradient(ellipse 70% 60% at 20% 30%, rgba(139,92,246,0.1) 0%, transparent 60%),
+        radial-gradient(ellipse 60% 50% at 80% 70%, rgba(236,72,153,0.07) 0%, transparent 60%),
+        var(--bg-primary);
+    }
+
+    .account-wrapper {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      max-width: 960px;
+      width: 100%;
+      gap: 0;
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      border: 1px solid var(--border);
+      box-shadow: 0 0 80px rgba(139,92,246,0.08);
+    }
+
+    .account-left {
+      background: linear-gradient(145deg, #0d0d1f, #1a0a2e);
+      padding: 60px 48px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      border-right: 1px solid var(--border);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .account-left::before {
+      content: '';
+      position: absolute;
+      top: -100px;
+      left: -100px;
+      width: 400px;
+      height: 400px;
+      background: radial-gradient(circle, rgba(139,92,246,0.15) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .account-left-brand { position: relative; z-index: 1; }
+
+    .account-features {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      margin-top: 48px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .account-feature {
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+    }
+
+    .account-feature-icon {
+      width: 36px;
+      height: 36px;
+      min-width: 36px;
+      border-radius: 8px;
+      background: rgba(139,92,246,0.15);
+      border: 1px solid rgba(139,92,246,0.2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+    }
+
+    .account-feature-text h4 { font-size: 0.9rem; font-weight: 600; margin-bottom: 2px; }
+    .account-feature-text p { font-size: 0.8rem; color: var(--text-muted); }
+
+    .account-right {
+      background: var(--bg-card);
+      padding: 48px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .auth-tabs {
+      display: flex;
+      gap: 0;
+      margin-bottom: 32px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .auth-tab {
+      flex: 1;
+      padding: 12px;
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      transition: var(--transition);
+      font-family: inherit;
+      margin-bottom: -1px;
+    }
+
+    .auth-tab.active {
+      color: var(--text-primary);
+      border-bottom-color: var(--purple);
+    }
+
+    .auth-form { display: none; }
+    .auth-form.active { display: block; }
+
+    .password-wrapper { position: relative; }
+    .password-toggle {
+      position: absolute;
+      right: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      cursor: pointer;
+      padding: 0;
+      font-size: 18px;
+      line-height: 1;
+    }
+
+    .strength-bar {
+      height: 3px;
+      background: rgba(255,255,255,0.08);
+      border-radius: 2px;
+      margin-top: 6px;
+      overflow: hidden;
+    }
+
+    .strength-fill {
+      height: 100%;
+      border-radius: 2px;
+      transition: all 0.3s ease;
+    }
+
+    .strength-text { font-size: 0.75rem; margin-top: 4px; }
+
+    .social-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      width: 100%;
+      padding: 11px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      background: transparent;
+      color: var(--text-primary);
+      font-size: 0.9rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: var(--transition);
+      font-family: inherit;
+      margin-bottom: 10px;
+    }
+
+    .social-btn:hover { background: rgba(255,255,255,0.04); border-color: rgba(255,255,255,0.15); }
+
+    .style-quiz {
+      background: rgba(139,92,246,0.05);
+      border: 1px solid rgba(139,92,246,0.15);
+      border-radius: var(--radius-sm);
+      padding: 16px;
+      margin-bottom: 20px;
+    }
+
+    .style-quiz-title { font-size: 0.85rem; font-weight: 700; margin-bottom: 10px; }
+
+    .style-quiz-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+
+    .style-quiz-chip {
+      padding: 5px 12px;
+      border: 1px solid rgba(139,92,246,0.2);
+      border-radius: 999px;
+      font-size: 0.78rem;
+      cursor: pointer;
+      color: var(--text-secondary);
+      background: transparent;
+      transition: var(--transition);
+    }
+
+    .style-quiz-chip.active {
+      background: rgba(139,92,246,0.15);
+      color: var(--purple-light);
+      border-color: var(--purple);
+    }
+
+    .form-error {
+      background: rgba(239,68,68,0.08);
+      border: 1px solid rgba(239,68,68,0.2);
+      border-radius: var(--radius-sm);
+      padding: 12px;
+      font-size: 0.85rem;
+      color: #f87171;
+      margin-bottom: 16px;
+      display: none;
+    }
+
+    .form-error.visible { display: block; }
+
+    .checkbox-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .checkbox-row input[type="checkbox"] {
+      width: 16px;
+      height: 16px;
+      min-width: 16px;
+      accent-color: var(--purple);
+      margin-top: 2px;
+    }
+
+    .checkbox-row label { font-size: 0.85rem; color: var(--text-secondary); cursor: pointer; }
+    .checkbox-row a { color: var(--purple-light); }
+
+    @media (max-width: 768px) {
+      .account-wrapper { grid-template-columns: 1fr; }
+      .account-left { display: none; }
+      .account-right { padding: 32px 24px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="account-wrapper">
+    <!-- LEFT PANEL -->
+    <div class="account-left">
+      <div class="account-left-brand">
+        <a href="index.html" class="logo">
+          <div class="logo-icon">✨</div>
+          <span class="logo-text">StyleAI</span>
+        </a>
+        <h2 style="margin-top:32px;font-size:1.6rem;">Your Personal<br><span class="gradient-text">AI Stylist</span></h2>
+        <p style="margin-top:12px;font-size:0.9rem;line-height:1.7;">Join thousands of people who've discovered their perfect style with AI-powered recommendations.</p>
+      </div>
+
+      <ul class="account-features">
+        <li class="account-feature">
+          <div class="account-feature-icon">🤖</div>
+          <div class="account-feature-text">
+            <h4>AI Outfit Recommendations</h4>
+            <p>Get personalized outfits generated by Claude AI based on your exact preferences.</p>
+          </div>
+        </li>
+        <li class="account-feature">
+          <div class="account-feature-icon">📸</div>
+          <div class="account-feature-text">
+            <h4>Environment Scanning</h4>
+            <p>Upload a photo of your destination and get context-aware fashion advice.</p>
+          </div>
+        </li>
+        <li class="account-feature">
+          <div class="account-feature-icon">💰</div>
+          <div class="account-feature-text">
+            <h4>Price Comparison</h4>
+            <p>Find every item across 12+ retailers and always get the best deal.</p>
+          </div>
+        </li>
+        <li class="account-feature">
+          <div class="account-feature-icon">🧠</div>
+          <div class="account-feature-text">
+            <h4>Machine Learning Profile</h4>
+            <p>The AI learns your taste over time and gets smarter with every search.</p>
+          </div>
+        </li>
+      </ul>
+
+      <div style="position:relative;z-index:1;">
+        <div style="font-size:0.8rem;color:var(--text-muted);">Trusted by style-seekers everywhere</div>
+        <div style="display:flex;gap:8px;margin-top:8px;">
+          <div class="badge badge-purple">🔒 Secure</div>
+          <div class="badge badge-green">✓ Free</div>
+          <div class="badge badge-gold">⭐ AI-Powered</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT PANEL: AUTH FORMS -->
+    <div class="account-right">
+      <div class="auth-tabs">
+        <button class="auth-tab active" id="tab-login" onclick="switchTab('login')">Sign In</button>
+        <button class="auth-tab" id="tab-register" onclick="switchTab('register')">Create Account</button>
+      </div>
+
+      <!-- ── LOGIN FORM ── -->
+      <div class="auth-form active" id="form-login">
+        <h2 style="margin-bottom:6px;">Welcome back</h2>
+        <p style="margin-bottom:28px;font-size:0.9rem;">Sign in to continue your style journey</p>
+
+        <div class="form-error" id="login-error"></div>
+
+        <div class="form-group">
+          <label class="form-label">Email</label>
+          <input type="email" class="form-input" id="login-email" placeholder="you@example.com" autocomplete="email">
+        </div>
+
+        <div class="form-group">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+            <label class="form-label">Password</label>
+            <a href="#" style="font-size:0.8rem;color:var(--purple-light);">Forgot password?</a>
+          </div>
+          <div class="password-wrapper">
+            <input type="password" class="form-input" id="login-password" placeholder="Your password" autocomplete="current-password">
+            <button type="button" class="password-toggle" onclick="togglePwd('login-password', this)">👁️</button>
+          </div>
+        </div>
+
+        <button class="btn btn-primary btn-full btn-lg" id="login-btn" onclick="handleLogin()">
+          Sign In to StyleAI
+        </button>
+
+        <div class="divider-text">or continue with</div>
+
+        <button class="social-btn" onclick="showToast('Social login coming soon!', 'info')">
+          <svg width="18" height="18" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+          Continue with Google
+        </button>
+
+        <p style="text-align:center;font-size:0.85rem;color:var(--text-muted);margin-top:16px;">
+          Don't have an account? <a href="#" onclick="switchTab('register')" style="color:var(--purple-light);">Sign up free</a>
+        </p>
+      </div>
+
+      <!-- ── REGISTER FORM ── -->
+      <div class="auth-form" id="form-register">
+        <h2 style="margin-bottom:6px;">Create your account</h2>
+        <p style="margin-bottom:24px;font-size:0.9rem;">Start discovering your perfect style with AI</p>
+
+        <div class="form-error" id="register-error"></div>
+
+        <div class="grid-2" style="gap:12px;">
+          <div class="form-group" style="margin-bottom:0;">
+            <label class="form-label">First Name</label>
+            <input type="text" class="form-input" id="reg-firstname" placeholder="First name" autocomplete="given-name">
+          </div>
+          <div class="form-group" style="margin-bottom:0;">
+            <label class="form-label">Last Name</label>
+            <input type="text" class="form-input" id="reg-lastname" placeholder="Last name" autocomplete="family-name">
+          </div>
+        </div>
+
+        <div class="form-group" style="margin-top:16px;">
+          <label class="form-label">Email</label>
+          <input type="email" class="form-input" id="reg-email" placeholder="you@example.com" autocomplete="email">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Password</label>
+          <div class="password-wrapper">
+            <input type="password" class="form-input" id="reg-password" placeholder="Min. 8 characters" autocomplete="new-password" oninput="checkStrength(this.value)">
+            <button type="button" class="password-toggle" onclick="togglePwd('reg-password', this)">👁️</button>
+          </div>
+          <div class="strength-bar"><div class="strength-fill" id="strength-fill"></div></div>
+          <div class="strength-text" id="strength-text"></div>
+        </div>
+
+        <div class="style-quiz">
+          <div class="style-quiz-title">🎨 What's your style? (optional — helps AI learn faster)</div>
+          <div class="style-quiz-chips" id="style-quiz-chips">
+            <button class="style-quiz-chip" data-value="Casual">Casual</button>
+            <button class="style-quiz-chip" data-value="Streetwear">Streetwear</button>
+            <button class="style-quiz-chip" data-value="Minimalist">Minimalist</button>
+            <button class="style-quiz-chip" data-value="Bohemian">Bohemian</button>
+            <button class="style-quiz-chip" data-value="Classic">Classic</button>
+            <button class="style-quiz-chip" data-value="Edgy">Edgy</button>
+            <button class="style-quiz-chip" data-value="Romantic">Romantic</button>
+            <button class="style-quiz-chip" data-value="Athleisure">Athleisure</button>
+            <button class="style-quiz-chip" data-value="Vintage">Vintage</button>
+            <button class="style-quiz-chip" data-value="Y2K">Y2K</button>
+          </div>
+        </div>
+
+        <div class="checkbox-row">
+          <input type="checkbox" id="reg-terms" checked>
+          <label for="reg-terms">I agree to the <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a></label>
+        </div>
+
+        <button class="btn btn-primary btn-full btn-lg" id="register-btn" onclick="handleRegister()">
+          Create Free Account ✨
+        </button>
+
+        <p style="text-align:center;font-size:0.85rem;color:var(--text-muted);margin-top:16px;">
+          Already have an account? <a href="#" onclick="switchTab('login')" style="color:var(--purple-light);">Sign in</a>
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/app.js"></script>
+  <script>
+    let selectedStyles = [];
+
+    // Check if already logged in
+    if (Auth.isLoggedIn()) {
+      window.location.href = 'profile.html';
+    }
+
+    // Switch between login/register tabs
+    function switchTab(tab) {
+      document.querySelectorAll('.auth-tab').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.auth-form').forEach(f => f.classList.remove('active'));
+      document.getElementById(`tab-${tab}`).classList.add('active');
+      document.getElementById(`form-${tab}`).classList.add('active');
+
+      // Clear errors
+      document.querySelectorAll('.form-error').forEach(e => { e.textContent = ''; e.classList.remove('visible'); });
+    }
+
+    // Check URL param for default tab
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('tab') === 'register') switchTab('register');
+
+    function showError(formId, msg) {
+      const el = document.getElementById(`${formId}-error`);
+      el.textContent = msg;
+      el.classList.add('visible');
+    }
+
+    function hideError(formId) {
+      const el = document.getElementById(`${formId}-error`);
+      el.classList.remove('visible');
+    }
+
+    // Password visibility toggle
+    function togglePwd(inputId, btn) {
+      const input = document.getElementById(inputId);
+      if (input.type === 'password') {
+        input.type = 'text';
+        btn.textContent = '🙈';
+      } else {
+        input.type = 'password';
+        btn.textContent = '👁️';
+      }
+    }
+
+    // Password strength indicator
+    function checkStrength(password) {
+      const fill = document.getElementById('strength-fill');
+      const text = document.getElementById('strength-text');
+
+      let score = 0;
+      if (password.length >= 8) score++;
+      if (/[A-Z]/.test(password)) score++;
+      if (/[0-9]/.test(password)) score++;
+      if (/[^A-Za-z0-9]/.test(password)) score++;
+
+      const levels = [
+        { width: '25%', color: '#ef4444', label: 'Weak' },
+        { width: '50%', color: '#f59e0b', label: 'Fair' },
+        { width: '75%', color: '#3b82f6', label: 'Good' },
+        { width: '100%', color: '#10b981', label: 'Strong 💪' }
+      ];
+
+      if (password.length === 0) {
+        fill.style.width = '0%';
+        text.textContent = '';
+        return;
+      }
+
+      const level = levels[Math.min(score - 1, 3)] || levels[0];
+      fill.style.width = level.width;
+      fill.style.background = level.color;
+      text.textContent = level.label;
+      text.style.color = level.color;
+    }
+
+    // Style quiz chips
+    document.querySelectorAll('.style-quiz-chip').forEach(chip => {
+      chip.addEventListener('click', () => {
+        chip.classList.toggle('active');
+        const val = chip.dataset.value;
+        if (chip.classList.contains('active')) {
+          selectedStyles.push(val);
+        } else {
+          selectedStyles = selectedStyles.filter(s => s !== val);
+        }
+      });
+    });
+
+    // Handle Login
+    async function handleLogin() {
+      const email = document.getElementById('login-email').value.trim();
+      const password = document.getElementById('login-password').value;
+      hideError('login');
+
+      if (!email || !password) return showError('login', 'Please fill in all fields.');
+
+      const btn = document.getElementById('login-btn');
+      btn.classList.add('btn-loading');
+      btn.disabled = true;
+
+      try {
+        const data = await API.post('/auth/login', { email, password });
+        Auth.setSession(data.token, data.user);
+        showToast(`Welcome back, ${data.user.name.split(' ')[0]}! 👋`, 'success');
+        setTimeout(() => window.location.href = 'profile.html', 800);
+      } catch (err) {
+        showError('login', err.message);
+      } finally {
+        btn.classList.remove('btn-loading');
+        btn.disabled = false;
+      }
+    }
+
+    // Handle Register
+    async function handleRegister() {
+      const firstName = document.getElementById('reg-firstname').value.trim();
+      const lastName = document.getElementById('reg-lastname').value.trim();
+      const email = document.getElementById('reg-email').value.trim();
+      const password = document.getElementById('reg-password').value;
+      const terms = document.getElementById('reg-terms').checked;
+      hideError('register');
+
+      if (!firstName || !email || !password) return showError('register', 'Please fill in all required fields.');
+      if (password.length < 8) return showError('register', 'Password must be at least 8 characters.');
+      if (!terms) return showError('register', 'Please agree to the Terms of Service.');
+
+      const btn = document.getElementById('register-btn');
+      btn.classList.add('btn-loading');
+      btn.disabled = true;
+
+      try {
+        const data = await API.post('/auth/register', {
+          name: `${firstName} ${lastName}`.trim(),
+          email,
+          password,
+          stylePreferences: selectedStyles
+        });
+        Auth.setSession(data.token, data.user);
+        showToast(`Welcome to StyleAI, ${firstName}! 🎉`, 'success');
+        setTimeout(() => window.location.href = 'profile.html', 800);
+      } catch (err) {
+        showError('register', err.message);
+      } finally {
+        btn.classList.remove('btn-loading');
+        btn.disabled = false;
+      }
+    }
+
+    // Enter key support
+    document.getElementById('login-password').addEventListener('keydown', e => {
+      if (e.key === 'Enter') handleLogin();
+    });
+
+    document.getElementById('reg-password').addEventListener('keydown', e => {
+      if (e.key === 'Enter') handleRegister();
+    });
+  </script>
+</body>
+</html>
