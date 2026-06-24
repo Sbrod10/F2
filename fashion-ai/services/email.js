@@ -1,18 +1,12 @@
-const nodemailer = require('nodemailer');
+const { Resend } = require('resend');
 
-const hasEmailConfig = !!(process.env.EMAIL_USER && process.env.EMAIL_PASS);
-
-const transporter = hasEmailConfig
-  ? nodemailer.createTransport({
-      service: 'gmail',
-      auth: { user: process.env.EMAIL_USER, pass: process.env.EMAIL_PASS }
-    })
-  : null;
+const hasEmailConfig = !!process.env.RESEND_API_KEY;
+const resend = hasEmailConfig ? new Resend(process.env.RESEND_API_KEY) : null;
 
 async function sendWelcomeEmail(to, name) {
-  if (!transporter) return;
-  await transporter.sendMail({
-    from: `"StyleAI" <${process.env.EMAIL_USER}>`,
+  if (!resend) return;
+  await resend.emails.send({
+    from: 'StyleAI <onboarding@resend.dev>',
     to,
     subject: 'Welcome to StyleAI! 👗',
     html: `
@@ -32,9 +26,9 @@ async function sendWelcomeEmail(to, name) {
 }
 
 async function sendPasswordResetEmail(to, name, resetLink) {
-  if (!transporter) return;
-  await transporter.sendMail({
-    from: `"StyleAI" <${process.env.EMAIL_USER}>`,
+  if (!resend) return;
+  await resend.emails.send({
+    from: 'StyleAI <onboarding@resend.dev>',
     to,
     subject: 'Reset your StyleAI password',
     html: `
