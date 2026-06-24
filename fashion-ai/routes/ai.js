@@ -1,5 +1,6 @@
 const express = require('express');
-const Anthropic = require('@anthropic-ai/sdk');
+let Anthropic = null;
+try { Anthropic = require('@anthropic-ai/sdk'); } catch(e) {}
 const multer = require('multer');
 const { optionalAuth } = require('../middleware/auth');
 const { users, userInteractions } = require('./auth');
@@ -7,7 +8,7 @@ const { users, userInteractions } = require('./auth');
 const router = express.Router();
 const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 20 * 1024 * 1024 } });
 
-const hasApiKey = !!process.env.ANTHROPIC_API_KEY;
+const hasApiKey = !!(Anthropic && process.env.ANTHROPIC_API_KEY);
 const client = hasApiKey ? new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY }) : null;
 
 // Build personalization context from user history (ML component)
