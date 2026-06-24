@@ -243,10 +243,61 @@
       transition: width 1s ease;
     }
 
+    .mobile-filter-fab {
+      display: none;
+      position: fixed;
+      bottom: 80px;
+      right: 20px;
+      z-index: 500;
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      background: var(--gradient-1);
+      border: none;
+      color: white;
+      font-size: 1.4rem;
+      cursor: pointer;
+      box-shadow: 0 4px 20px rgba(139,92,246,0.5);
+      align-items: center;
+      justify-content: center;
+      transition: var(--transition);
+    }
+
+    .mobile-filter-fab:hover { transform: scale(1.1); }
+
+    .mobile-sidebar-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.7);
+      z-index: 600;
+      backdrop-filter: blur(4px);
+    }
+
+    .mobile-sidebar-overlay.open { display: block; }
+
     @media (max-width: 900px) {
       .discover-layout { grid-template-columns: 1fr; }
-      .sidebar { height: auto; position: static; }
+      .sidebar {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        width: 320px;
+        max-width: 90vw;
+        z-index: 700;
+        height: 100vh;
+        border-right: 1px solid var(--border);
+        animation: slideFromLeft 0.25s ease;
+        padding-top: 60px;
+      }
+      .sidebar.mobile-open { display: block; }
+      .mobile-filter-fab { display: flex; }
+      .main-content { padding: 16px; }
     }
+
+    @keyframes slideFromLeft { from { transform: translateX(-100%); } to { transform: translateX(0); } }
   </style>
 </head>
 <body>
@@ -279,9 +330,16 @@
     <a href="profile.html">My Style</a>
   </div>
 
+  <!-- Mobile filter overlay -->
+  <div class="mobile-sidebar-overlay" id="mobile-sidebar-overlay" onclick="closeMobileSidebar()"></div>
+
+  <!-- Mobile filter FAB -->
+  <button class="mobile-filter-fab" onclick="openMobileSidebar()" aria-label="Open Filters">🎛️</button>
+
   <div class="discover-layout">
     <!-- SIDEBAR: FILTERS -->
-    <aside class="sidebar">
+    <aside class="sidebar" id="discover-sidebar">
+      <button onclick="closeMobileSidebar()" style="display:none;position:absolute;top:16px;right:16px;background:rgba(255,255,255,0.06);border:1px solid var(--border);color:var(--text-secondary);width:32px;height:32px;border-radius:50%;cursor:pointer;font-size:18px;align-items:center;justify-content:center;" id="sidebar-close-btn">✕</button>
       <h2 style="font-size:1.2rem;margin-bottom:6px;">Fashion Discovery</h2>
       <p style="font-size:0.85rem;color:var(--text-muted);margin-bottom:24px;">Choose your mode below</p>
 
@@ -593,7 +651,8 @@
       const max = parseInt(document.getElementById('budget-max').value);
       const budget = `$${Math.min(min,max)} - $${Math.max(min,max) === 500 ? '500+' : Math.max(min,max)}`;
 
-      showLoading('StyleAI is designing your outfits...');
+      const demoStatus = await API.get('/demo/status').catch(() => ({ hasApiKey: false }));
+      showLoading(demoStatus.hasApiKey ? 'Claude AI is designing your outfits...' : 'Loading demo outfits...');
 
       try {
         const data = await API.post('/ai/recommend', {
@@ -959,6 +1018,29 @@
         }
       ];
     }
+
+    // Mobile sidebar
+    function openMobileSidebar() {
+      document.getElementById('discover-sidebar').classList.add('mobile-open');
+      document.getElementById('mobile-sidebar-overlay').classList.add('open');
+      document.getElementById('sidebar-close-btn').style.display = 'flex';
+    }
+
+    function closeMobileSidebar() {
+      document.getElementById('discover-sidebar').classList.remove('mobile-open');
+      document.getElementById('mobile-sidebar-overlay').classList.remove('open');
+    }
+
+    // Update generate button loading text based on demo mode
+    async function initDemoCheck() {
+      try {
+        const { hasApiKey } = await API.get('/demo/status');
+        if (!hasApiKey) {
+          document.getElementById('generate-btn').textContent = '🎭 Generate Demo Outfits';
+        }
+      } catch {}
+    }
+    initDemoCheck();
 
     // Handle URL query params (from trending click)
     const urlParams = new URLSearchParams(window.location.search);

@@ -7,7 +7,8 @@ const { users, userInteractions } = require('./auth');
 const router = express.Router();
 const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 20 * 1024 * 1024 } });
 
-const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
+const hasApiKey = !!process.env.ANTHROPIC_API_KEY;
+const client = hasApiKey ? new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY }) : null;
 
 // Build personalization context from user history (ML component)
 function buildUserContext(userId) {
@@ -43,8 +44,11 @@ function recordInteraction(userId, data) {
   }
 }
 
+const { getDemoRecommendations, getDemoScanResult } = require('./demo');
+
 // POST /api/ai/recommend - Get fashion recommendations from filters
 router.post('/recommend', optionalAuth, async (req, res) => {
+  if (!hasApiKey) return res.json(getDemoRecommendations(req.body));
   try {
     const {
       occasion, style, colors, budget, season, bodyType,
@@ -124,6 +128,7 @@ Please provide exactly 4 outfit recommendations. For each, respond in this EXACT
 
 // POST /api/ai/scan-environment - Analyze photo and suggest fashion
 router.post('/scan-environment', optionalAuth, upload.single('image'), async (req, res) => {
+  if (!hasApiKey) return res.json(getDemoScanResult('rooftop-bar'));
   try {
     if (!req.file && !req.body.imageBase64) {
       return res.status(400).json({ error: 'No image provided' });
@@ -292,6 +297,16 @@ Respond in this EXACT JSON format only:
 
 // POST /api/ai/style-chat - AI style chat assistant
 router.post('/style-chat', optionalAuth, async (req, res) => {
+  if (!hasApiKey) {
+    const demoReplies = [
+      "Great question! For that look, I'd pair wide-leg trousers with a fitted top to balance proportions — and always add one statement piece to tie it together. 🎨",
+      "That style is having a major moment right now! The key to nailing it is fit — everything should feel intentional, not accidental. Try thrifting for unique pieces.",
+      "For your budget, I'd invest in 2-3 quality basics (a great blazer, dark-wash jeans, white sneakers) and use faster fashion for trendy accent pieces. Smart strategy! 💡",
+      "Love the direction you're going! Switch to the Filter mode on the left and I'll generate full outfit recommendations with price comparisons across 12+ retailers. 🛍️",
+      "Add your Anthropic API key in the .env file to unlock full AI chat! For now, try the Filter tab to see demo outfit recommendations. ✨"
+    ];
+    return res.json({ success: true, message: demoReplies[Math.floor(Math.random() * demoReplies.length)], role: 'assistant', demo: true });
+  }
   try {
     const { message, conversationHistory = [] } = req.body;
     const userId = req.user?.userId;

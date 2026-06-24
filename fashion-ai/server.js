@@ -8,6 +8,7 @@ const authRoutes = require('./routes/auth');
 const aiRoutes = require('./routes/ai');
 const searchRoutes = require('./routes/search');
 const userRoutes = require('./routes/user');
+const demoRoutes = require('./routes/demo');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -21,6 +22,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/ai', aiRoutes);
 app.use('/api/search', searchRoutes);
 app.use('/api/user', userRoutes);
+app.use('/api/demo', demoRoutes);
 
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));

@@ -203,10 +203,31 @@ function getResults(key) {
   try { return JSON.parse(sessionStorage.getItem(key)); } catch { return null; }
 }
 
+// ─── Demo Mode Banner ───
+async function checkDemoMode() {
+  try {
+    const data = await API.get('/demo/status');
+    if (!data.hasApiKey) {
+      const banner = document.createElement('div');
+      banner.id = 'demo-banner';
+      banner.style.cssText = 'position:fixed;bottom:0;left:0;right:0;z-index:9998;background:linear-gradient(90deg,#f59e0b,#d97706);color:#0a0a00;padding:10px 20px;text-align:center;font-size:0.85rem;font-weight:600;display:flex;align-items:center;justify-content:center;gap:12px;';
+      banner.innerHTML = `
+        <span>🎭 Demo Mode — Add your <code style="background:rgba(0,0,0,0.15);padding:2px 6px;border-radius:4px;">ANTHROPIC_API_KEY</code> to .env for live AI</span>
+        <button onclick="document.getElementById('demo-banner').remove()" style="background:rgba(0,0,0,0.2);border:none;color:inherit;padding:4px 10px;border-radius:4px;cursor:pointer;font-weight:700;">✕</button>
+      `;
+      document.body.appendChild(banner);
+      // shift toast container above banner
+      const toastEl = document.getElementById('toast-container');
+      if (toastEl) toastEl.style.bottom = '52px';
+    }
+  } catch {}
+}
+
 // Init on load
 document.addEventListener('DOMContentLoaded', () => {
   initNavbar();
   initAnimations();
+  checkDemoMode();
 });
 
 window.Auth = Auth;

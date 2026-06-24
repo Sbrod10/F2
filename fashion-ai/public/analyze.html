@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Outfit Analyzer — StyleAI</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    body { padding-top: 72px; }
+
+    .analyze-layout {
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 40px;
+    }
+
+    .upload-zone {
+      border: 2px dashed var(--border);
+      border-radius: var(--radius-lg);
+      padding: 64px 32px;
+      text-align: center;
+      cursor: pointer;
+      transition: var(--transition);
+      position: relative;
+      background: rgba(255,255,255,0.01);
+    }
+
+    .upload-zone:hover, .upload-zone.dragging {
+      border-color: var(--purple);
+      background: rgba(139,92,246,0.04);
+    }
+
+    .upload-zone input[type="file"] {
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      cursor: pointer;
+      width: 100%;
+      height: 100%;
+    }
+
+    .upload-icon { font-size: 4rem; display: block; margin-bottom: 16px; }
+    .upload-title { font-size: 1.2rem; font-weight: 700; margin-bottom: 6px; }
+    .upload-hint { font-size: 0.9rem; color: var(--text-muted); }
+
+    .preview-container {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 32px;
+      margin-top: 32px;
+    }
+
+    .image-preview-box {
+      position: relative;
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      aspect-ratio: 3/4;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .image-preview-box img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .image-preview-placeholder {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+      color: var(--text-muted);
+      font-size: 0.9rem;
+    }
+
+    .analysis-panel { display: flex; flex-direction: column; gap: 16px; }
+
+    .score-circle {
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      background: conic-gradient(var(--purple) 0%, rgba(139,92,246,0.1) 0%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      margin: 0 auto;
+    }
+
+    .score-inner {
+      width: 76px;
+      height: 76px;
+      border-radius: 50%;
+      background: var(--bg-card);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .score-number { font-size: 1.5rem; font-weight: 900; line-height: 1; }
+    .score-label { font-size: 0.65rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; }
+
+    .analysis-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      padding: 12px;
+      border-radius: var(--radius-sm);
+    }
+
+    .analysis-item.strength { background: rgba(16,185,129,0.06); border: 1px solid rgba(16,185,129,0.12); }
+    .analysis-item.improvement { background: rgba(245,158,11,0.06); border: 1px solid rgba(245,158,11,0.12); }
+    .analysis-item.tip { background: rgba(139,92,246,0.06); border: 1px solid rgba(139,92,246,0.12); }
+
+    .analysis-icon { font-size: 1rem; min-width: 20px; margin-top: 1px; }
+    .analysis-text { font-size: 0.85rem; line-height: 1.5; }
+
+    .item-chips { display: flex; flex-direction: column; gap: 8px; }
+
+    .identified-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 14px;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      gap: 8px;
+    }
+
+    .identified-item-left { display: flex; align-items: center; gap: 10px; min-width: 0; }
+    .identified-item-type { font-size: 0.7rem; color: var(--text-muted); background: rgba(255,255,255,0.05); padding: 2px 8px; border-radius: 4px; white-space: nowrap; }
+    .identified-item-name { font-size: 0.85rem; font-weight: 600; }
+    .identified-item-price { font-size: 0.8rem; color: var(--purple-light); white-space: nowrap; flex-shrink: 0; }
+
+    .empty-analysis {
+      text-align: center;
+      padding: 40px 20px;
+      color: var(--text-muted);
+    }
+
+    .empty-analysis .big-icon { font-size: 2.5rem; margin-bottom: 12px; display: block; }
+
+    .color-analysis {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+    }
+
+    .similar-link {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      font-size: 0.8rem;
+      color: var(--text-secondary);
+      background: transparent;
+      cursor: pointer;
+      text-align: left;
+      transition: var(--transition);
+      font-family: inherit;
+      width: 100%;
+    }
+
+    .similar-link:hover { border-color: var(--purple); color: var(--text-primary); }
+
+    @media (max-width: 768px) {
+      .analyze-layout { padding: 20px; }
+      .preview-container { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <nav class="navbar" id="navbar">
+    <a href="index.html" class="logo">
+      <div class="logo-icon">✨</div>
+      <span class="logo-text">StyleAI</span>
+    </a>
+    <ul class="nav-links">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="discover.html">Discover</a></li>
+      <li><a href="analyze.html" class="active">Outfit Analyzer</a></li>
+      <li><a href="results.html">Results</a></li>
+      <li><a href="profile.html" class="nav-user-link hidden">My Style</a></li>
+    </ul>
+    <div class="nav-cta">
+      <a href="account.html" class="btn btn-secondary btn-sm nav-auth-link">Sign In</a>
+      <a href="account.html?tab=register" class="btn btn-primary btn-sm nav-auth-link">Get Started</a>
+      <a href="profile.html" class="btn btn-secondary btn-sm nav-user-link hidden">👤 <span class="nav-username">Profile</span></a>
+      <button class="btn btn-ghost btn-sm nav-user-link hidden" onclick="logout()">Sign Out</button>
+    </div>
+    <button class="hamburger"><span></span><span></span><span></span></button>
+  </nav>
+  <div class="mobile-menu" id="mobile-menu">
+    <button id="mobile-close" style="position:absolute;top:20px;right:20px;background:none;border:none;color:var(--text-secondary);font-size:28px;cursor:pointer;">✕</button>
+    <a href="index.html">Home</a>
+    <a href="discover.html">Discover</a>
+    <a href="analyze.html">Outfit Analyzer</a>
+    <a href="results.html">Results</a>
+    <a href="account.html">Account</a>
+  </div>
+
+  <div class="analyze-layout">
+    <div class="page-hero" style="padding:40px 0 32px;text-align:left;">
+      <div class="badge badge-pink" style="margin-bottom:12px;">🤖 AI Vision</div>
+      <h1 style="font-size:2rem;">Outfit <span class="gradient-text">Analyzer</span></h1>
+      <p style="margin-top:8px;max-width:560px;">Upload a photo of any outfit — yours, an influencer's, a store mannequin — and get an instant AI style score, expert feedback, and links to buy every item.</p>
+    </div>
+
+    <!-- Upload zone (shown before analysis) -->
+    <div id="upload-section">
+      <div class="upload-zone" id="upload-zone">
+        <input type="file" accept="image/*" id="outfit-file" onchange="handleFileSelect(event)">
+        <span class="upload-icon">👗</span>
+        <div class="upload-title">Drop an outfit photo here</div>
+        <div class="upload-hint">or click to browse • Supports JPG, PNG, WEBP</div>
+        <div style="margin-top:20px;display:flex;gap:8px;justify-content:center;flex-wrap:wrap;">
+          <span class="badge badge-purple">🎯 Style Score</span>
+          <span class="badge badge-pink">✨ Expert Tips</span>
+          <span class="badge badge-gold">💰 Find Items</span>
+          <span class="badge badge-green">🎨 Color Analysis</span>
+        </div>
+      </div>
+
+      <div style="margin-top:24px;">
+        <div style="font-size:0.85rem;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:12px;">Try With Example Outfits</div>
+        <div style="display:flex;gap:10px;flex-wrap:wrap;">
+          <button class="btn btn-ghost btn-sm" onclick="runDemoAnalysis('streetwear')">🧢 Streetwear</button>
+          <button class="btn btn-ghost btn-sm" onclick="runDemoAnalysis('business')">💼 Business Casual</button>
+          <button class="btn btn-ghost btn-sm" onclick="runDemoAnalysis('date-night')">🌙 Date Night</button>
+          <button class="btn btn-ghost btn-sm" onclick="runDemoAnalysis('boho')">🌿 Bohemian</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Preview + results -->
+    <div class="preview-container" id="preview-container" style="display:none;">
+      <div>
+        <div class="image-preview-box" id="image-preview-box">
+          <div class="image-preview-placeholder">
+            <span style="font-size:2rem;">👗</span>
+            <span>Your outfit will appear here</span>
+          </div>
+        </div>
+        <div style="margin-top:12px;display:flex;gap:8px;">
+          <button class="btn btn-ghost btn-sm" style="flex:1;" onclick="resetAnalyzer()">← Try Another</button>
+          <button class="btn btn-primary btn-sm" style="flex:1;" id="analyze-btn" onclick="analyzeOutfit()">✨ Analyze</button>
+        </div>
+      </div>
+
+      <div class="analysis-panel" id="analysis-panel">
+        <div class="empty-analysis" id="empty-analysis">
+          <span class="big-icon">🔍</span>
+          <p>Click <strong>Analyze</strong> to get your AI style score and expert feedback</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/app.js"></script>
+  <script>
+    let uploadedImageBase64 = null;
+
+    const uploadZone = document.getElementById('upload-zone');
+    uploadZone.addEventListener('dragover', e => { e.preventDefault(); uploadZone.classList.add('dragging'); });
+    uploadZone.addEventListener('dragleave', () => uploadZone.classList.remove('dragging'));
+    uploadZone.addEventListener('drop', e => {
+      e.preventDefault();
+      uploadZone.classList.remove('dragging');
+      const file = e.dataTransfer.files[0];
+      if (file && file.type.startsWith('image/')) processFile(file);
+    });
+
+    function handleFileSelect(e) {
+      const file = e.target.files[0];
+      if (file) processFile(file);
+    }
+
+    function processFile(file) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        uploadedImageBase64 = e.target.result;
+        showPreview(uploadedImageBase64);
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function showPreview(src) {
+      document.getElementById('upload-section').style.display = 'none';
+      document.getElementById('preview-container').style.display = 'grid';
+      document.getElementById('image-preview-box').innerHTML = `<img src="${src}" alt="Outfit preview">`;
+    }
+
+    function resetAnalyzer() {
+      uploadedImageBase64 = null;
+      document.getElementById('upload-section').style.display = 'block';
+      document.getElementById('preview-container').style.display = 'none';
+      document.getElementById('outfit-file').value = '';
+      document.getElementById('analysis-panel').innerHTML = `
+        <div class="empty-analysis" id="empty-analysis">
+          <span class="big-icon">🔍</span>
+          <p>Click <strong>Analyze</strong> to get your AI style score and expert feedback</p>
+        </div>
+      `;
+    }
+
+    async function analyzeOutfit() {
+      const btn = document.getElementById('analyze-btn');
+      btn.classList.add('btn-loading');
+      btn.disabled = true;
+
+      document.getElementById('analysis-panel').innerHTML = `
+        <div style="display:flex;flex-direction:column;align-items:center;gap:16px;padding:40px 20px;">
+          <div class="spinner"></div>
+          <p style="color:var(--text-muted);">AI is analyzing your outfit...</p>
+        </div>
+      `;
+
+      try {
+        const demoStatus = await API.get('/demo/status').catch(() => ({ hasApiKey: false }));
+
+        let data;
+        if (!demoStatus.hasApiKey || !uploadedImageBase64) {
+          data = getDemoAnalysis('general');
+        } else {
+          data = await API.post('/ai/analyze-outfit', { imageBase64: uploadedImageBase64 });
+        }
+
+        renderAnalysis(data.outfitAnalysis);
+        showToast('Analysis complete! 🎨', 'success');
+      } catch (err) {
+        renderAnalysis(getDemoAnalysis('general').outfitAnalysis);
+        showToast('Using demo analysis — add API key for live AI', 'info');
+      } finally {
+        btn.classList.remove('btn-loading');
+        btn.disabled = false;
+      }
+    }
+
+    function renderAnalysis(analysis) {
+      const panel = document.getElementById('analysis-panel');
+      const score = analysis.overallScore || 82;
+      const deg = Math.round((score / 100) * 360);
+
+      panel.innerHTML = `
+        <div class="card" style="text-align:center;padding:24px;">
+          <div class="score-circle" style="background:conic-gradient(var(--purple) ${deg}deg, rgba(139,92,246,0.08) ${deg}deg);">
+            <div class="score-inner">
+              <div class="score-number gradient-text">${score}</div>
+              <div class="score-label">Style Score</div>
+            </div>
+          </div>
+          <div style="margin-top:12px;">
+            <div style="font-weight:700;font-size:1rem;">${analysis.styleCategory || 'Mixed Style'}</div>
+            <div style="font-size:0.85rem;color:var(--text-muted);margin-top:2px;">${analysis.occasion || 'Versatile'} • ${analysis.season || 'All Season'}</div>
+          </div>
+        </div>
+
+        <div class="card" style="padding:20px;">
+          <h4 style="margin-bottom:12px;">💬 Stylist Verdict</h4>
+          <p style="font-size:0.9rem;line-height:1.6;">${analysis.stylistVerdict}</p>
+          ${analysis.suggestions ? `<div style="margin-top:12px;padding:10px;background:rgba(139,92,246,0.06);border:1px solid rgba(139,92,246,0.15);border-radius:8px;font-size:0.82rem;"><strong>✨ Elevate it: </strong>${analysis.suggestions}</div>` : ''}
+        </div>
+
+        ${analysis.strengths?.length ? `
+          <div class="card" style="padding:20px;">
+            <h4 style="margin-bottom:10px;">✅ What's Working</h4>
+            <div style="display:flex;flex-direction:column;gap:8px;">
+              ${analysis.strengths.map(s => `<div class="analysis-item strength"><span class="analysis-icon">✓</span><span class="analysis-text">${s}</span></div>`).join('')}
+            </div>
+          </div>
+        ` : ''}
+
+        ${analysis.improvements?.length ? `
+          <div class="card" style="padding:20px;">
+            <h4 style="margin-bottom:10px;">💡 Styling Suggestions</h4>
+            <div style="display:flex;flex-direction:column;gap:8px;">
+              ${analysis.improvements.map(i => `<div class="analysis-item improvement"><span class="analysis-icon">→</span><span class="analysis-text">${i}</span></div>`).join('')}
+            </div>
+          </div>
+        ` : ''}
+
+        ${analysis.colorAnalysis ? `
+          <div class="card" style="padding:20px;">
+            <h4 style="margin-bottom:10px;">🎨 Color Analysis</h4>
+            <div class="color-analysis">
+              <div style="display:flex;gap:4px;">
+                ${(analysis.colorAnalysis.palette || []).map(c => `<div style="width:28px;height:28px;border-radius:50%;background:${c};border:2px solid rgba(255,255,255,0.1);" title="${c}"></div>`).join('')}
+              </div>
+              <div>
+                <div style="font-size:0.85rem;font-weight:600;">${analysis.colorAnalysis.harmony || 'Complementary'}</div>
+                <div style="font-size:0.75rem;color:var(--text-muted);">Color Harmony</div>
+              </div>
+              <div style="margin-left:auto;text-align:center;">
+                <div style="font-size:1.1rem;font-weight:800;color:var(--success);">${analysis.colorAnalysis.rating || 80}</div>
+                <div style="font-size:0.7rem;color:var(--text-muted);">Rating</div>
+              </div>
+            </div>
+          </div>
+        ` : ''}
+
+        ${analysis.identifiedItems?.length ? `
+          <div class="card" style="padding:20px;">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+              <h4>🛍️ Shop the Look</h4>
+              <span class="badge badge-purple">${analysis.identifiedItems.length} items</span>
+            </div>
+            <div class="item-chips">
+              ${analysis.identifiedItems.map(item => `
+                <div class="identified-item">
+                  <div class="identified-item-left">
+                    <span class="identified-item-type">${item.type}</span>
+                    <span class="identified-item-name">${item.description || item.type}</span>
+                  </div>
+                  <span class="identified-item-price">${item.estimatedPrice}</span>
+                </div>
+              `).join('')}
+            </div>
+            <button class="btn btn-primary btn-sm btn-full" style="margin-top:14px;" onclick="findPrices(${JSON.stringify(analysis.identifiedItems).replace(/"/g,'&quot;')})">
+              💰 Compare Prices for All Items
+            </button>
+          </div>
+        ` : ''}
+      `;
+    }
+
+    function findPrices(items) {
+      const outfit = {
+        outfitName: 'Analyzed Outfit',
+        description: 'Items detected from your uploaded outfit photo.',
+        items: items.map(item => ({
+          type: item.type,
+          name: item.description || item.type,
+          estimatedPrice: item.estimatedPrice,
+          searchQuery: item.searchQuery || item.description
+        }))
+      };
+      storeResults('active_outfit', outfit);
+      window.location.href = 'results.html';
+    }
+
+    function getDemoAnalysis(style) {
+      const analyses = {
+        streetwear: { overallScore: 88, styleCategory: 'Streetwear', occasion: 'Casual', season: 'All Season', stylistVerdict: 'This streetwear look nails the aesthetic — the proportions are on point and the sneaker choice grounds the whole outfit. The layering shows intentionality.', suggestions: 'A crossbody bag would complete this look and add functional flair.', strengths: ['Strong silhouette with good proportion balance', 'Sneaker choice elevates the whole look', 'Color palette is cohesive and intentional'], improvements: ['Add an accessory (cap, bag, chain) to finish the look', 'Consider tucking or half-tucking the top for visual interest'], colorAnalysis: { palette: ['#1a1a1a', '#f5f5f5', '#dc2626'], harmony: 'Monochromatic + Pop', rating: 91 }, identifiedItems: [{ type: 'Top', description: 'Graphic Oversized Tee', estimatedPrice: '$25 - $60', searchQuery: 'graphic oversized tee streetwear' }, { type: 'Bottom', description: 'Baggy Cargo Pants', estimatedPrice: '$45 - $95', searchQuery: 'baggy cargo pants' }, { type: 'Shoes', description: 'Chunky Sneakers', estimatedPrice: '$80 - $180', searchQuery: 'chunky platform sneakers' }] },
+        business: { overallScore: 84, styleCategory: 'Business Casual', occasion: 'Office / Work', season: 'All Season', stylistVerdict: 'A solid, professional look that communicates competence and polish. The fit is clean and the color choices are appropriate for the office environment.', suggestions: 'A watch or subtle jewelry would add personality without breaking the dress code.', strengths: ['Professional and polished silhouette', 'Appropriate formality for business-casual settings', 'Color choices are sophisticated and versatile'], improvements: ['Add a statement accessory to express personality', 'Try a slightly bolder color in the accessories to avoid looking too uniform'], colorAnalysis: { palette: ['#2c3e50', '#ecf0f1', '#95a5a6'], harmony: 'Neutral Monochromatic', rating: 82 }, identifiedItems: [{ type: 'Top', description: 'Silk-Blend Blouse', estimatedPrice: '$40 - $95', searchQuery: 'silk blend blouse office' }, { type: 'Bottom', description: 'Tailored Straight-Leg Trousers', estimatedPrice: '$55 - $120', searchQuery: 'tailored trousers women work' }, { type: 'Shoes', description: 'Block Heel Loafers', estimatedPrice: '$60 - $130', searchQuery: 'block heel loafers' }] },
+        'date-night': { overallScore: 93, styleCategory: 'Evening / Date Night', occasion: 'Dinner / Date', season: 'All Season', stylistVerdict: 'This look is confidently put together — it says "I made an effort" without screaming it. The balance between elevated and accessible is exactly right for a date night.', suggestions: 'A delicate necklace at the collarbone would draw the eye upward perfectly.', strengths: ['Excellent balance of sexy and sophisticated', 'The color palette photographs beautifully', 'Footwear choice perfectly matches the formality level'], improvements: ['Consider adding a clutch — it elevates the look from dinner to dinner + after', 'A subtle fragrance to complement the visual presentation'], colorAnalysis: { palette: ['#1a0a2e', '#c9a96e', '#f5e6c8'], harmony: 'Jewel Tone + Gold', rating: 95 }, identifiedItems: [{ type: 'Dress', description: 'Satin Slip Midi Dress', estimatedPrice: '$55 - $140', searchQuery: 'satin slip midi dress' }, { type: 'Shoes', description: 'Strappy Heeled Sandals', estimatedPrice: '$55 - $130', searchQuery: 'strappy heeled sandals' }, { type: 'Accessory', description: 'Gold Chain Necklace', estimatedPrice: '$20 - $60', searchQuery: 'gold chain necklace layered' }] },
+        boho: { overallScore: 87, styleCategory: 'Bohemian / Free Spirit', occasion: 'Casual / Festival', season: 'Spring/Summer', stylistVerdict: 'Captures the boho spirit authentically — the textures and layers are working together harmoniously. The earthy tones feel grounded and intentional rather than costume-like.', suggestions: 'Layer a dainty anklet above your shoes to add that final boho finishing touch.', strengths: ['Beautiful texture mixing and layering', 'Earthy color palette feels cohesive and authentic', 'Silhouette is flowy and feminine without being shapeless'], improvements: ['A wide-brim hat would protect from sun and complete the boho aesthetic perfectly', 'Consider adding a fringe bag for extra texture interest'], colorAnalysis: { palette: ['#c9a96e', '#8B7355', '#f5ebe0'], harmony: 'Analogous Earth Tones', rating: 89 }, identifiedItems: [{ type: 'Top', description: 'Peasant Embroidered Blouse', estimatedPrice: '$30 - $75', searchQuery: 'peasant embroidered blouse boho' }, { type: 'Bottom', description: 'Flowy Maxi Skirt', estimatedPrice: '$35 - $80', searchQuery: 'flowy maxi skirt boho' }, { type: 'Shoes', description: 'Woven Flat Sandals', estimatedPrice: '$30 - $70', searchQuery: 'woven flat sandals boho' }, { type: 'Accessory', description: 'Layered Beaded Necklaces', estimatedPrice: '$15 - $40', searchQuery: 'layered boho necklace set' }] },
+        general: { overallScore: 85, styleCategory: 'Contemporary Casual', occasion: 'Everyday', season: 'All Season', stylistVerdict: 'A well-balanced, stylish look that shows good fashion instincts. The outfit has a clear point of view and the pieces work together effectively.', suggestions: 'One additional accessory — a bag, belt, or jewelry — would take this from great to polished.', strengths: ['Good proportion balance between pieces', 'Color choices are cohesive and flattering', 'The overall silhouette is contemporary and fresh'], improvements: ['Add a statement accessory to complete the look', 'Consider how footwear anchors the entire outfit — it\'s the most powerful styling tool'], colorAnalysis: { palette: ['#2c2c2c', '#f5f5f5', '#8b5cf6'], harmony: 'Complementary', rating: 83 }, identifiedItems: [{ type: 'Top', description: 'Contemporary Blouse or Shirt', estimatedPrice: '$30 - $80', searchQuery: 'contemporary women blouse' }, { type: 'Bottom', description: 'Tailored Trousers or Skirt', estimatedPrice: '$45 - $100', searchQuery: 'tailored trousers skirt women' }, { type: 'Shoes', description: 'Versatile Everyday Shoes', estimatedPrice: '$50 - $120', searchQuery: 'versatile women shoes' }] }
+      };
+      return { outfitAnalysis: analyses[style] || analyses.general };
+    }
+
+    function runDemoAnalysis(style) {
+      document.getElementById('upload-section').style.display = 'none';
+      document.getElementById('preview-container').style.display = 'grid';
+
+      const emojis = { streetwear: '🧢', business: '💼', 'date-night': '🌙', boho: '🌿' };
+      document.getElementById('image-preview-box').innerHTML = `
+        <div class="image-preview-placeholder" style="gap:16px;">
+          <span style="font-size:4rem;">${emojis[style] || '👗'}</span>
+          <div style="font-weight:700;font-size:1rem;">${style.replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase())} Look</div>
+          <div style="font-size:0.8rem;color:var(--text-muted);">Demo outfit analysis</div>
+        </div>
+      `;
+
+      renderAnalysis(getDemoAnalysis(style).outfitAnalysis);
+      showToast('Demo analysis loaded! Upload a real photo for personalized AI feedback 📸', 'info');
+    }
+  </script>
+</body>
+</html>
