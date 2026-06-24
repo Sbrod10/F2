@@ -1,0 +1,648 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>StyleAI — AI-Powered Fashion Discovery</title>
+  <meta name="description" content="Discover your perfect style with AI. Get personalized outfit recommendations, scan your environment, and find the best prices.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    /* ─── HERO ─── */
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      position: relative;
+      overflow: hidden;
+      padding: 120px 40px 80px;
+    }
+
+    .hero-bg {
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 80% 60% at 20% 40%, rgba(139, 92, 246, 0.12) 0%, transparent 60%),
+        radial-gradient(ellipse 60% 50% at 80% 60%, rgba(236, 72, 153, 0.08) 0%, transparent 60%);
+    }
+
+    .hero-grid {
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+      background-size: 60px 60px;
+      mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black 30%, transparent 80%);
+    }
+
+    .hero-content {
+      max-width: 1280px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 80px;
+      align-items: center;
+      position: relative;
+      z-index: 1;
+      width: 100%;
+    }
+
+    .hero-eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 14px;
+      background: rgba(139, 92, 246, 0.1);
+      border: 1px solid rgba(139, 92, 246, 0.2);
+      border-radius: 999px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--purple-light);
+      margin-bottom: 24px;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+
+    .hero-title { margin-bottom: 20px; }
+
+    .hero-subtitle {
+      font-size: 1.1rem;
+      line-height: 1.7;
+      max-width: 480px;
+      margin-bottom: 36px;
+    }
+
+    .hero-actions {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .hero-stats {
+      display: flex;
+      gap: 32px;
+      margin-top: 48px;
+      padding-top: 32px;
+      border-top: 1px solid var(--border);
+    }
+
+    .hero-stat { text-align: center; }
+    .hero-stat .value { font-size: 1.8rem; font-weight: 800; background: var(--gradient-1); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+    .hero-stat .label { font-size: 0.8rem; color: var(--text-muted); margin-top: 2px; }
+
+    .hero-visual {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .hero-mockup {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      padding: 24px;
+      width: 100%;
+      max-width: 440px;
+      box-shadow: 0 0 80px rgba(139, 92, 246, 0.1);
+      position: relative;
+    }
+
+    .mockup-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 20px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .mockup-dots { display: flex; gap: 6px; }
+    .mockup-dot { width: 10px; height: 10px; border-radius: 50%; }
+    .mockup-dot:nth-child(1) { background: #ef4444; }
+    .mockup-dot:nth-child(2) { background: #f59e0b; }
+    .mockup-dot:nth-child(3) { background: #10b981; }
+
+    .mockup-title { font-size: 0.85rem; font-weight: 600; color: var(--text-secondary); }
+
+    .mockup-ai-response {
+      background: rgba(139, 92, 246, 0.08);
+      border: 1px solid rgba(139, 92, 246, 0.15);
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 16px;
+    }
+
+    .mockup-ai-icon {
+      width: 28px;
+      height: 28px;
+      background: var(--gradient-1);
+      border-radius: 8px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      margin-bottom: 8px;
+    }
+
+    .mockup-ai-text { font-size: 0.85rem; line-height: 1.6; color: var(--text-secondary); }
+
+    .mockup-outfit-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .mockup-item {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 12px;
+    }
+
+    .mockup-item-emoji { font-size: 1.4rem; display: block; margin-bottom: 6px; }
+    .mockup-item-name { font-size: 0.75rem; font-weight: 600; margin-bottom: 2px; }
+    .mockup-item-price { font-size: 0.7rem; color: var(--purple-light); }
+
+    .float-badge {
+      position: absolute;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 10px 14px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      animation: float 3s ease-in-out infinite;
+      box-shadow: var(--shadow-card);
+    }
+
+    .float-badge-1 { top: -20px; right: -20px; animation-delay: 0s; }
+    .float-badge-2 { bottom: -20px; left: -20px; animation-delay: 1.5s; }
+
+    /* ─── FEATURES ─── */
+    .features-section { padding: 100px 40px; }
+
+    .feature-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 32px;
+      transition: var(--transition);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .feature-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 1px;
+      background: var(--gradient-1);
+      opacity: 0;
+      transition: var(--transition);
+    }
+
+    .feature-card:hover { border-color: var(--border-glow); transform: translateY(-4px); box-shadow: var(--shadow-glow); }
+    .feature-card:hover::before { opacity: 1; }
+
+    .feature-icon {
+      width: 56px;
+      height: 56px;
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      margin-bottom: 20px;
+    }
+
+    .feature-icon-purple { background: rgba(139, 92, 246, 0.15); }
+    .feature-icon-pink { background: rgba(236, 72, 153, 0.15); }
+    .feature-icon-gold { background: rgba(245, 158, 11, 0.15); }
+    .feature-icon-teal { background: rgba(6, 182, 212, 0.15); }
+
+    .feature-card h3 { margin-bottom: 10px; }
+    .feature-card p { font-size: 0.95rem; line-height: 1.7; }
+
+    /* ─── HOW IT WORKS ─── */
+    .steps-section { padding: 80px 40px; background: var(--bg-secondary); }
+
+    .step {
+      display: flex;
+      gap: 24px;
+      align-items: flex-start;
+    }
+
+    .step-number {
+      width: 48px;
+      height: 48px;
+      min-width: 48px;
+      border-radius: 50%;
+      background: var(--gradient-1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 1.1rem;
+      color: white;
+    }
+
+    .step-content h3 { margin-bottom: 8px; }
+    .step-content p { font-size: 0.95rem; }
+
+    /* ─── TRENDING ─── */
+    .trending-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 20px;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      transition: var(--transition);
+      cursor: pointer;
+    }
+
+    .trending-item:hover { border-color: var(--border-glow); transform: translateX(4px); }
+
+    .trending-left { display: flex; align-items: center; gap: 16px; }
+    .trending-emoji { font-size: 1.5rem; }
+    .trending-name { font-weight: 600; font-size: 0.95rem; }
+    .trending-category { font-size: 0.8rem; color: var(--text-muted); margin-top: 2px; }
+    .trending-right { text-align: right; }
+    .trending-trend { color: var(--success); font-weight: 700; font-size: 0.9rem; }
+    .trending-price { font-size: 0.8rem; color: var(--text-muted); margin-top: 2px; }
+
+    /* ─── CTA ─── */
+    .cta-section {
+      padding: 100px 40px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .cta-section::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse 70% 60% at 50% 50%, rgba(139,92,246,0.12) 0%, transparent 70%);
+    }
+
+    .cta-section h2 { margin-bottom: 16px; }
+    .cta-section p { max-width: 500px; margin: 0 auto 36px; font-size: 1.05rem; }
+    .cta-actions { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+
+    @media (max-width: 768px) {
+      .hero { padding: 100px 20px 60px; }
+      .hero-content { grid-template-columns: 1fr; gap: 48px; }
+      .hero-visual { display: none; }
+      .features-section, .steps-section { padding: 60px 20px; }
+      .cta-section { padding: 60px 20px; }
+    }
+  </style>
+</head>
+<body>
+  <!-- NAVBAR -->
+  <nav class="navbar" id="navbar">
+    <a href="index.html" class="logo">
+      <div class="logo-icon">✨</div>
+      <span class="logo-text">StyleAI</span>
+    </a>
+    <ul class="nav-links">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="discover.html">Discover</a></li>
+      <li><a href="results.html">Results</a></li>
+      <li><a href="profile.html" class="nav-user-link hidden">My Style</a></li>
+    </ul>
+    <div class="nav-cta">
+      <a href="account.html" class="btn btn-secondary nav-auth-link">Sign In</a>
+      <a href="account.html?tab=register" class="btn btn-primary nav-auth-link">Get Started</a>
+      <a href="profile.html" class="btn btn-secondary nav-user-link hidden">
+        <span>👤</span> <span class="nav-username">Profile</span>
+      </a>
+      <button class="btn btn-ghost btn-sm nav-user-link hidden" onclick="logout()">Sign Out</button>
+    </div>
+    <button class="hamburger" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+  </nav>
+
+  <!-- MOBILE MENU -->
+  <div class="mobile-menu" id="mobile-menu">
+    <button id="mobile-close" style="position:absolute;top:20px;right:20px;background:none;border:none;color:var(--text-secondary);font-size:28px;cursor:pointer;">✕</button>
+    <a href="index.html">Home</a>
+    <a href="discover.html">Discover</a>
+    <a href="results.html">Results</a>
+    <a href="account.html">Account</a>
+    <a href="profile.html">My Style</a>
+  </div>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-bg"></div>
+    <div class="hero-grid"></div>
+    <div class="hero-content">
+      <div>
+        <div class="hero-eyebrow animate-in">
+          <span>🤖</span> Powered by AI + Machine Learning
+        </div>
+        <h1 class="hero-title animate-in" data-delay="1">
+          Find Your <span class="gradient-text">Perfect Style</span> with AI
+        </h1>
+        <p class="hero-subtitle animate-in" data-delay="2">
+          Don't know what you're looking for? StyleAI learns your taste, scans your environment, and finds the best prices — so you always look your best without the guesswork.
+        </p>
+        <div class="hero-actions animate-in" data-delay="3">
+          <a href="discover.html" class="btn btn-primary btn-lg">
+            🔍 Start Discovering
+          </a>
+          <a href="account.html?tab=register" class="btn btn-secondary btn-lg">
+            Create Free Account
+          </a>
+        </div>
+        <div class="hero-stats animate-in" data-delay="4">
+          <div class="hero-stat">
+            <div class="value">50K+</div>
+            <div class="label">Styles Discovered</div>
+          </div>
+          <div class="hero-stat">
+            <div class="value">12+</div>
+            <div class="label">Retailers Searched</div>
+          </div>
+          <div class="hero-stat">
+            <div class="value">AI</div>
+            <div class="label">Always Learning</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="hero-visual animate-in" data-delay="2">
+        <div class="hero-mockup">
+          <div class="float-badge float-badge-1">
+            <span>🧠</span> AI Style Match: 94%
+          </div>
+          <div class="float-badge float-badge-2">
+            <span>💰</span> Best Price Found!
+          </div>
+
+          <div class="mockup-header">
+            <div class="mockup-dots">
+              <div class="mockup-dot"></div>
+              <div class="mockup-dot"></div>
+              <div class="mockup-dot"></div>
+            </div>
+            <span class="mockup-title">StyleAI — Discover Mode</span>
+          </div>
+
+          <div class="mockup-ai-response">
+            <div class="mockup-ai-icon">✨</div>
+            <div class="mockup-ai-text">
+              Based on your casual summer vibe and $50–$100 budget, here are your perfect outfit recommendations...
+            </div>
+          </div>
+
+          <div class="mockup-outfit-grid">
+            <div class="mockup-item">
+              <span class="mockup-item-emoji">👕</span>
+              <div class="mockup-item-name">Linen Crop Top</div>
+              <div class="mockup-item-price">From $24.99</div>
+            </div>
+            <div class="mockup-item">
+              <span class="mockup-item-emoji">👖</span>
+              <div class="mockup-item-name">Wide-leg Pants</div>
+              <div class="mockup-item-price">From $39.99</div>
+            </div>
+            <div class="mockup-item">
+              <span class="mockup-item-emoji">👡</span>
+              <div class="mockup-item-name">Platform Mules</div>
+              <div class="mockup-item-price">From $45.00</div>
+            </div>
+            <div class="mockup-item">
+              <span class="mockup-item-emoji">👜</span>
+              <div class="mockup-item-name">Mini Tote Bag</div>
+              <div class="mockup-item-price">From $18.00</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FEATURES -->
+  <section class="features-section">
+    <div class="container">
+      <div class="section-header animate-in">
+        <h2>Everything You Need to <span class="gradient-text">Dress Perfectly</span></h2>
+        <p>Three powerful ways to discover fashion that actually fits your life</p>
+      </div>
+      <div class="grid-4 animate-in" data-delay="1">
+        <div class="feature-card">
+          <div class="feature-icon feature-icon-purple">🎛️</div>
+          <h3>Smart Style Filters</h3>
+          <p>Select your occasion, color palette, budget, season, and body type. Our AI builds outfits around your exact needs.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon feature-icon-pink">📸</div>
+          <h3>Environment Scan</h3>
+          <p>Upload a photo of where you're going — a restaurant, beach, office, or event — and get outfit suggestions tailored to that exact setting.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon feature-icon-gold">💰</div>
+          <h3>Price Comparison</h3>
+          <p>Find every recommended item across 12+ retailers. We show you the best price, similar alternatives, and where to buy today.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon feature-icon-teal">🧠</div>
+          <h3>Machine Learning</h3>
+          <p>The more you use StyleAI, the smarter it gets. It learns your taste, saves your history, and makes increasingly personalized recommendations.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- HOW IT WORKS -->
+  <section class="steps-section">
+    <div class="container">
+      <div class="section-header animate-in">
+        <h2>How <span class="gradient-text">StyleAI</span> Works</h2>
+        <p>Getting perfect style recommendations takes less than 60 seconds</p>
+      </div>
+      <div class="grid-2 animate-in" style="gap: 40px; align-items: start;">
+        <div style="display:flex;flex-direction:column;gap:32px;">
+          <div class="step">
+            <div class="step-number">1</div>
+            <div class="step-content">
+              <h3>Tell us your style or scan your setting</h3>
+              <p>Use filters to describe what you want — or just upload a photo of where you're going and let AI figure it out.</p>
+            </div>
+          </div>
+          <div class="step">
+            <div class="step-number">2</div>
+            <div class="step-content">
+              <h3>AI generates personalized outfits</h3>
+              <p>Claude AI analyzes your inputs and creates complete, styled outfit recommendations with expert styling tips.</p>
+            </div>
+          </div>
+          <div class="step">
+            <div class="step-number">3</div>
+            <div class="step-content">
+              <h3>Compare prices across retailers</h3>
+              <p>See each item listed across 12+ stores. Find the best deal, similar alternatives, and links to buy immediately.</p>
+            </div>
+          </div>
+          <div class="step">
+            <div class="step-number">4</div>
+            <div class="step-content">
+              <h3>Save favorites & watch AI learn</h3>
+              <p>Save items to your wardrobe. Over time, the AI learns exactly what you love and gets smarter with every search.</p>
+            </div>
+          </div>
+        </div>
+        <div class="card" style="padding: 32px; background: var(--bg-primary);">
+          <div style="display:flex;align-items:center;gap:12px;margin-bottom:24px;">
+            <div style="width:40px;height:40px;background:var(--gradient-1);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;">✨</div>
+            <div>
+              <div style="font-weight:700;">StyleAI Assistant</div>
+              <div style="font-size:0.8rem;color:var(--text-muted);">Always Online • Always Learning</div>
+            </div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:12px;">
+            <div class="chat-bubble ai">
+              Hey! I noticed you love minimalist styles. Based on your 12 previous searches, here are 4 outfits I think you'll love for your dinner tonight 🍽️
+            </div>
+            <div class="chat-bubble user">
+              These are perfect! Can you find a cheaper version of the blazer?
+            </div>
+            <div class="chat-bubble ai">
+              Found it! H&M has a nearly identical oversized blazer for $49 (vs $189 at Zara). Also spotted it on ASOS for $67 with free returns. Want me to compare more options?
+            </div>
+          </div>
+          <div style="margin-top:20px;padding-top:20px;border-top:1px solid var(--border);display:flex;align-items:center;gap:8px;">
+            <div class="badge badge-purple">🧠 ML Active</div>
+            <div class="badge badge-green">📈 Learning Your Taste</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TRENDING -->
+  <section class="section">
+    <div class="container">
+      <div class="section-header animate-in">
+        <h2>What's <span class="gradient-text">Trending Now</span></h2>
+        <p>The hottest fashion searches this week — updated in real time</p>
+      </div>
+      <div class="grid-2 animate-in" id="trending-grid">
+        <div class="skeleton" style="height:64px;border-radius:var(--radius);"></div>
+        <div class="skeleton" style="height:64px;border-radius:var(--radius);"></div>
+        <div class="skeleton" style="height:64px;border-radius:var(--radius);"></div>
+        <div class="skeleton" style="height:64px;border-radius:var(--radius);"></div>
+      </div>
+      <div class="text-center mt-24 animate-in">
+        <a href="discover.html" class="btn btn-primary">Discover More Trends →</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="cta-section">
+    <div style="position:relative;z-index:1;">
+      <div class="animate-in">
+        <h2>Ready to Find Your <span class="gradient-text">Perfect Style?</span></h2>
+        <p>Join thousands of people who've discovered their personal fashion identity with StyleAI.</p>
+        <div class="cta-actions">
+          <a href="discover.html" class="btn btn-primary btn-lg">🔍 Start Discovering Free</a>
+          <a href="account.html?tab=register" class="btn btn-secondary btn-lg">Create Account</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <a href="index.html" class="logo">
+          <div class="logo-icon">✨</div>
+          <span class="logo-text">StyleAI</span>
+        </a>
+        <p>AI-powered fashion discovery that learns your style and finds the best prices across dozens of retailers.</p>
+      </div>
+      <div class="footer-col">
+        <h4>Discover</h4>
+        <ul class="footer-links">
+          <li><a href="discover.html">Style Filters</a></li>
+          <li><a href="discover.html#scan">Environment Scan</a></li>
+          <li><a href="results.html">Price Compare</a></li>
+          <li><a href="discover.html#chat">AI Chat</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Account</h4>
+        <ul class="footer-links">
+          <li><a href="account.html">Sign In</a></li>
+          <li><a href="account.html?tab=register">Register</a></li>
+          <li><a href="profile.html">My Profile</a></li>
+          <li><a href="profile.html#saved">Saved Items</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>About</h4>
+        <ul class="footer-links">
+          <li><a href="#">How It Works</a></li>
+          <li><a href="#">Privacy Policy</a></li>
+          <li><a href="#">Terms of Service</a></li>
+          <li><a href="#">Contact</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2025 StyleAI. Powered by Claude AI.</span>
+      <div style="display:flex;gap:16px;">
+        <span class="badge badge-purple">🤖 AI-Powered</span>
+        <span class="badge badge-green">🔒 Secure</span>
+      </div>
+    </div>
+  </footer>
+
+  <script src="js/app.js"></script>
+  <script>
+    // Load trending items
+    async function loadTrending() {
+      try {
+        const data = await API.get('/search/trending');
+        const grid = document.getElementById('trending-grid');
+        if (!data.trending?.length) return;
+
+        grid.innerHTML = data.trending.slice(0, 8).map(item => `
+          <div class="trending-item" onclick="window.location.href='discover.html?q=${encodeURIComponent(item.name)}'">
+            <div class="trending-left">
+              <div class="trending-emoji">${item.emoji}</div>
+              <div>
+                <div class="trending-name">${item.name}</div>
+                <div class="trending-category">${item.category}</div>
+              </div>
+            </div>
+            <div class="trending-right">
+              <div class="trending-trend">${item.trend}</div>
+              <div class="trending-price">${item.price}</div>
+            </div>
+          </div>
+        `).join('');
+      } catch (err) {
+        console.warn('Could not load trending items');
+      }
+    }
+
+    loadTrending();
+  </script>
+</body>
+</html>

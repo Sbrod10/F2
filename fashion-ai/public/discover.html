@@ -1,0 +1,970 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Discover Your Style — StyleAI</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    .discover-layout {
+      display: grid;
+      grid-template-columns: 380px 1fr;
+      gap: 0;
+      min-height: calc(100vh - 72px);
+      margin-top: 72px;
+    }
+
+    .sidebar {
+      background: var(--bg-secondary);
+      border-right: 1px solid var(--border);
+      height: calc(100vh - 72px);
+      position: sticky;
+      top: 72px;
+      overflow-y: auto;
+      padding: 32px 24px;
+    }
+
+    .main-content {
+      padding: 32px;
+      overflow-y: auto;
+    }
+
+    .filter-section {
+      margin-bottom: 28px;
+      padding-bottom: 24px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .filter-section:last-child { border-bottom: none; margin-bottom: 0; }
+
+    .filter-title {
+      font-size: 0.8rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--text-muted);
+      margin-bottom: 14px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .mode-selector {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 8px;
+      margin-bottom: 32px;
+    }
+
+    .mode-btn {
+      padding: 12px 8px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      background: transparent;
+      color: var(--text-secondary);
+      cursor: pointer;
+      font-size: 0.8rem;
+      font-weight: 600;
+      transition: var(--transition);
+      text-align: center;
+      font-family: inherit;
+    }
+
+    .mode-btn .icon { font-size: 1.3rem; display: block; margin-bottom: 4px; }
+    .mode-btn:hover { border-color: var(--purple); color: var(--text-primary); }
+    .mode-btn.active {
+      border-color: var(--purple);
+      background: rgba(139, 92, 246, 0.1);
+      color: var(--purple-light);
+    }
+
+    .mode-panel { display: none; }
+    .mode-panel.active { display: block; }
+
+    .budget-display {
+      text-align: center;
+      font-size: 1.2rem;
+      font-weight: 800;
+      background: var(--gradient-1);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 8px;
+    }
+
+    .color-grid {
+      display: grid;
+      grid-template-columns: repeat(10, 1fr);
+      gap: 6px;
+    }
+
+    .generate-btn-wrapper {
+      position: sticky;
+      bottom: 0;
+      background: var(--bg-secondary);
+      padding: 16px 0 0;
+      margin-top: 24px;
+    }
+
+    /* Main content panels */
+    .discover-hero {
+      text-align: center;
+      padding: 48px 24px;
+      background: var(--bg-secondary);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      margin-bottom: 32px;
+    }
+
+    .chat-container {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      display: flex;
+      flex-direction: column;
+      height: 500px;
+    }
+
+    .chat-messages {
+      flex: 1;
+      overflow-y: auto;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .chat-input-row {
+      display: flex;
+      gap: 8px;
+      padding: 16px 20px;
+      border-top: 1px solid var(--border);
+    }
+
+    .chat-input {
+      flex: 1;
+      padding: 10px 16px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      color: var(--text-primary);
+      font-size: 0.9rem;
+      outline: none;
+      font-family: inherit;
+    }
+
+    .chat-input:focus { border-color: var(--purple); }
+
+    .results-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 20px;
+    }
+
+    .outfit-result-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      transition: var(--transition);
+    }
+
+    .outfit-result-card:hover {
+      border-color: var(--border-glow);
+      transform: translateY(-4px);
+      box-shadow: var(--shadow-glow);
+    }
+
+    .outfit-card-top {
+      padding: 20px;
+      background: linear-gradient(135deg, rgba(139,92,246,0.08), rgba(236,72,153,0.05));
+      border-bottom: 1px solid var(--border);
+    }
+
+    .outfit-card-content { padding: 20px; }
+
+    .item-list { display: flex; flex-direction: column; gap: 10px; }
+
+    .item-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 12px;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      gap: 8px;
+    }
+
+    .item-row-left { display: flex; align-items: center; gap: 10px; min-width: 0; }
+    .item-type-badge {
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      background: rgba(255,255,255,0.04);
+      padding: 2px 8px;
+      border-radius: 4px;
+      white-space: nowrap;
+    }
+    .item-name { font-size: 0.85rem; font-weight: 600; truncate; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .item-price { font-size: 0.8rem; color: var(--purple-light); white-space: nowrap; flex-shrink: 0; }
+
+    .scan-result {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+    }
+
+    .scan-env-banner {
+      padding: 24px;
+      background: linear-gradient(135deg, rgba(6,182,212,0.1), rgba(139,92,246,0.08));
+      border-bottom: 1px solid var(--border);
+    }
+
+    .env-details { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: 16px; }
+    .env-detail { text-align: center; padding: 12px; background: rgba(255,255,255,0.04); border-radius: var(--radius-sm); }
+    .env-detail .label { font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; }
+    .env-detail .value { font-size: 0.95rem; font-weight: 700; margin-top: 4px; }
+
+    .confidence-bar {
+      height: 4px;
+      background: rgba(255,255,255,0.1);
+      border-radius: 2px;
+      margin-top: 8px;
+      overflow: hidden;
+    }
+
+    .confidence-fill {
+      height: 100%;
+      background: var(--gradient-3);
+      border-radius: 2px;
+      transition: width 1s ease;
+    }
+
+    @media (max-width: 900px) {
+      .discover-layout { grid-template-columns: 1fr; }
+      .sidebar { height: auto; position: static; }
+    }
+  </style>
+</head>
+<body>
+  <!-- NAVBAR -->
+  <nav class="navbar" id="navbar">
+    <a href="index.html" class="logo">
+      <div class="logo-icon">✨</div>
+      <span class="logo-text">StyleAI</span>
+    </a>
+    <ul class="nav-links">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="discover.html" class="active">Discover</a></li>
+      <li><a href="results.html">Results</a></li>
+      <li><a href="profile.html" class="nav-user-link hidden">My Style</a></li>
+    </ul>
+    <div class="nav-cta">
+      <a href="account.html" class="btn btn-secondary btn-sm nav-auth-link">Sign In</a>
+      <a href="account.html?tab=register" class="btn btn-primary btn-sm nav-auth-link">Get Started</a>
+      <a href="profile.html" class="btn btn-secondary btn-sm nav-user-link hidden">👤 <span class="nav-username">Profile</span></a>
+      <button class="btn btn-ghost btn-sm nav-user-link hidden" onclick="logout()">Sign Out</button>
+    </div>
+    <button class="hamburger"><span></span><span></span><span></span></button>
+  </nav>
+  <div class="mobile-menu" id="mobile-menu">
+    <button id="mobile-close" style="position:absolute;top:20px;right:20px;background:none;border:none;color:var(--text-secondary);font-size:28px;cursor:pointer;">✕</button>
+    <a href="index.html">Home</a>
+    <a href="discover.html">Discover</a>
+    <a href="results.html">Results</a>
+    <a href="account.html">Account</a>
+    <a href="profile.html">My Style</a>
+  </div>
+
+  <div class="discover-layout">
+    <!-- SIDEBAR: FILTERS -->
+    <aside class="sidebar">
+      <h2 style="font-size:1.2rem;margin-bottom:6px;">Fashion Discovery</h2>
+      <p style="font-size:0.85rem;color:var(--text-muted);margin-bottom:24px;">Choose your mode below</p>
+
+      <div class="mode-selector">
+        <button class="mode-btn active" data-mode="filters" onclick="switchMode('filters', this)">
+          <span class="icon">🎛️</span> Filters
+        </button>
+        <button class="mode-btn" data-mode="scan" onclick="switchMode('scan', this)">
+          <span class="icon">📸</span> Scan
+        </button>
+        <button class="mode-btn" data-mode="chat" onclick="switchMode('chat', this)">
+          <span class="icon">💬</span> Chat
+        </button>
+      </div>
+
+      <!-- FILTERS MODE -->
+      <div id="mode-filters" class="mode-panel active">
+        <div class="filter-section">
+          <div class="filter-title">🎯 Occasion</div>
+          <div class="chip-group" id="occasion-chips">
+            <div class="chip active" data-value="Casual">Casual</div>
+            <div class="chip" data-value="Date Night">Date Night</div>
+            <div class="chip" data-value="Work">Work</div>
+            <div class="chip" data-value="Party">Party</div>
+            <div class="chip" data-value="Wedding">Wedding</div>
+            <div class="chip" data-value="Beach">Beach</div>
+            <div class="chip" data-value="Festival">Festival</div>
+            <div class="chip" data-value="Travel">Travel</div>
+            <div class="chip" data-value="Gym">Gym</div>
+            <div class="chip" data-value="Formal">Formal</div>
+          </div>
+        </div>
+
+        <div class="filter-section">
+          <div class="filter-title">✨ Style Aesthetic</div>
+          <div class="chip-group" id="style-chips">
+            <div class="chip active" data-value="Casual">Casual</div>
+            <div class="chip" data-value="Minimalist">Minimalist</div>
+            <div class="chip" data-value="Streetwear">Streetwear</div>
+            <div class="chip" data-value="Bohemian">Bohemian</div>
+            <div class="chip" data-value="Classic">Classic</div>
+            <div class="chip" data-value="Edgy">Edgy</div>
+            <div class="chip" data-value="Romantic">Romantic</div>
+            <div class="chip" data-value="Athleisure">Athleisure</div>
+            <div class="chip" data-value="Vintage">Vintage</div>
+            <div class="chip" data-value="Y2K">Y2K</div>
+            <div class="chip" data-value="Cottagecore">Cottagecore</div>
+            <div class="chip" data-value="Dark Academia">Dark Academia</div>
+          </div>
+        </div>
+
+        <div class="filter-section">
+          <div class="filter-title">🎨 Colors</div>
+          <div class="color-grid" id="color-chips">
+            <div class="chip-color active" style="background:#000" data-value="Black" title="Black"></div>
+            <div class="chip-color" style="background:#fff;border-color:rgba(255,255,255,0.3)" data-value="White" title="White"></div>
+            <div class="chip-color" style="background:#6b7280" data-value="Grey" title="Grey"></div>
+            <div class="chip-color" style="background:#92400e" data-value="Brown" title="Brown"></div>
+            <div class="chip-color" style="background:#b45309" data-value="Camel" title="Camel"></div>
+            <div class="chip-color" style="background:#dc2626" data-value="Red" title="Red"></div>
+            <div class="chip-color" style="background:#f97316" data-value="Orange" title="Orange"></div>
+            <div class="chip-color" style="background:#f59e0b" data-value="Yellow" title="Yellow"></div>
+            <div class="chip-color" style="background:#16a34a" data-value="Green" title="Green"></div>
+            <div class="chip-color" style="background:#0ea5e9" data-value="Blue" title="Blue"></div>
+            <div class="chip-color" style="background:#2563eb" data-value="Navy" title="Navy"></div>
+            <div class="chip-color" style="background:#7c3aed" data-value="Purple" title="Purple"></div>
+            <div class="chip-color" style="background:#db2777" data-value="Pink" title="Pink"></div>
+            <div class="chip-color" style="background:#f0fdf4" data-value="Mint" title="Mint"></div>
+            <div class="chip-color" style="background:#fef3c7" data-value="Cream" title="Cream"></div>
+            <div class="chip-color" style="background:linear-gradient(135deg,#ff6b6b,#4ecdc4,#45b7d1,#f9ca24)" data-value="Colorful" title="Multicolor"></div>
+          </div>
+        </div>
+
+        <div class="filter-section">
+          <div class="filter-title">💰 Budget</div>
+          <div class="budget-display" id="budget-display">$50 – $150</div>
+          <div class="range-group">
+            <input type="range" id="budget-min" min="0" max="500" value="50" step="10" oninput="updateBudget()">
+            <input type="range" id="budget-max" min="0" max="500" value="150" step="10" oninput="updateBudget()">
+            <div class="range-labels"><span>$0</span><span>$500+</span></div>
+          </div>
+        </div>
+
+        <div class="filter-section">
+          <div class="filter-title">🌤️ Season</div>
+          <div class="chip-group" id="season-chips">
+            <div class="chip active" data-value="Any Season">Any Season</div>
+            <div class="chip" data-value="Spring">🌸 Spring</div>
+            <div class="chip" data-value="Summer">☀️ Summer</div>
+            <div class="chip" data-value="Fall">🍂 Fall</div>
+            <div class="chip" data-value="Winter">❄️ Winter</div>
+          </div>
+        </div>
+
+        <div class="filter-section">
+          <div class="filter-title">👤 About You</div>
+          <div class="form-group" style="margin-bottom:12px;">
+            <select class="form-select" id="gender-select">
+              <option value="">Gender Expression</option>
+              <option>Feminine</option>
+              <option>Masculine</option>
+              <option>Androgynous</option>
+              <option>Non-binary</option>
+            </select>
+          </div>
+          <div class="form-group" style="margin-bottom:12px;">
+            <select class="form-select" id="body-type-select">
+              <option value="">Body Type (optional)</option>
+              <option>Petite</option>
+              <option>Tall</option>
+              <option>Curvy</option>
+              <option>Athletic</option>
+              <option>Plus Size</option>
+            </select>
+          </div>
+          <div class="form-group" style="margin-bottom:0;">
+            <select class="form-select" id="material-select">
+              <option value="">Material Preference</option>
+              <option>Natural (Cotton, Linen)</option>
+              <option>Luxe (Silk, Cashmere)</option>
+              <option>Denim</option>
+              <option>Knit/Cozy</option>
+              <option>Synthetic/Stretch</option>
+              <option>Leather</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="filter-section">
+          <div class="filter-title">📝 Additional Notes</div>
+          <textarea class="form-textarea" id="notes-input" placeholder="E.g. 'I need something for a rooftop party in Miami, comfortable but stylish...'" style="min-height:60px;"></textarea>
+        </div>
+
+        <div class="generate-btn-wrapper">
+          <button class="btn btn-primary btn-full" id="generate-btn" onclick="generateRecommendations()">
+            ✨ Generate AI Outfits
+          </button>
+        </div>
+      </div>
+
+      <!-- SCAN MODE -->
+      <div id="mode-scan" class="mode-panel">
+        <div class="filter-section">
+          <div class="filter-title">📸 Scan Your Environment</div>
+          <p style="font-size:0.85rem;color:var(--text-muted);margin-bottom:16px;">Upload a photo of where you're going and AI will recommend perfect outfits for that setting.</p>
+
+          <div class="dropzone" id="scan-dropzone">
+            <input type="file" accept="image/*" onchange="handleScanUpload(event)" id="scan-file-input">
+            <span class="dropzone-icon">📸</span>
+            <div class="dropzone-text">Drop your photo here</div>
+            <div class="dropzone-hint">or click to browse • JPG, PNG, WEBP</div>
+          </div>
+          <div id="scan-preview" class="hidden" style="margin-top:12px;"></div>
+        </div>
+
+        <div class="filter-section">
+          <div class="filter-title">💡 Try These Examples</div>
+          <div style="display:flex;flex-direction:column;gap:8px;">
+            <button class="btn btn-ghost btn-sm" style="justify-content:flex-start;gap:10px;" onclick="loadExampleScan('rooftop-bar')">
+              🌆 Rooftop Bar
+            </button>
+            <button class="btn btn-ghost btn-sm" style="justify-content:flex-start;gap:10px;" onclick="loadExampleScan('beach')">
+              🏖️ Beach / Pool
+            </button>
+            <button class="btn btn-ghost btn-sm" style="justify-content:flex-start;gap:10px;" onclick="loadExampleScan('office')">
+              🏢 Office / Work
+            </button>
+            <button class="btn btn-ghost btn-sm" style="justify-content:flex-start;gap:10px;" onclick="loadExampleScan('wedding')">
+              💒 Wedding Venue
+            </button>
+          </div>
+        </div>
+
+        <div class="generate-btn-wrapper">
+          <button class="btn btn-primary btn-full" id="scan-btn" onclick="scanEnvironment()" disabled>
+            📸 Analyze Environment
+          </button>
+        </div>
+      </div>
+
+      <!-- CHAT MODE -->
+      <div id="mode-chat" class="mode-panel">
+        <div class="filter-section">
+          <div class="filter-title">💬 Ask StyleAI</div>
+          <p style="font-size:0.85rem;color:var(--text-muted);margin-bottom:0;">Chat with our AI stylist about any fashion question.</p>
+        </div>
+      </div>
+    </aside>
+
+    <!-- MAIN CONTENT AREA -->
+    <main class="main-content" id="main-content">
+      <div id="panel-filters" class="content-panel">
+        <div class="discover-hero">
+          <div style="font-size:3rem;margin-bottom:16px;">✨</div>
+          <h2 style="margin-bottom:10px;">Your AI Stylist Awaits</h2>
+          <p style="max-width:480px;margin:0 auto 24px;">Customize your filters on the left and click <strong>"Generate AI Outfits"</strong> to get personalized recommendations with price comparisons across 12+ retailers.</p>
+          <div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap;">
+            <div class="badge badge-purple">🤖 Claude AI</div>
+            <div class="badge badge-pink">💰 Price Compare</div>
+            <div class="badge badge-gold">🧠 Learns Your Taste</div>
+            <div class="badge badge-green">🔄 Always Fresh</div>
+          </div>
+        </div>
+
+        <div id="filter-results"></div>
+      </div>
+
+      <div id="panel-scan" class="content-panel hidden">
+        <div class="discover-hero">
+          <div style="font-size:3rem;margin-bottom:16px;">📸</div>
+          <h2 style="margin-bottom:10px;">Environment Scan</h2>
+          <p style="max-width:480px;margin:0 auto 24px;">Upload a photo of your destination and our AI will detect the setting, occasion, and formality level — then suggest perfect outfits for that exact environment.</p>
+          <div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap;">
+            <div class="badge badge-purple">🎭 Setting Detection</div>
+            <div class="badge badge-pink">👗 Outfit Matching</div>
+            <div class="badge badge-gold">🎯 Context-Aware</div>
+          </div>
+        </div>
+        <div id="scan-results"></div>
+      </div>
+
+      <div id="panel-chat" class="content-panel hidden">
+        <div class="card" style="margin-bottom:0;padding:0;overflow:hidden;">
+          <div style="padding:20px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px;">
+            <div style="width:40px;height:40px;background:var(--gradient-1);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;">✨</div>
+            <div>
+              <div style="font-weight:700;">StyleAI Chat</div>
+              <div style="font-size:0.8rem;color:var(--success);">● Online — Ask me anything about fashion</div>
+            </div>
+          </div>
+          <div class="chat-messages" id="chat-messages">
+            <div class="chat-bubble ai">
+              Hey! I'm StyleAI, your personal fashion assistant 👋 Ask me anything — "what should I wear to a rooftop party?", "how do I style wide-leg jeans?", "find me a similar item for less money" — I'm here to help!
+            </div>
+          </div>
+          <div class="chat-input-row">
+            <input class="chat-input" id="chat-input" placeholder="Ask about fashion, styling, outfit ideas..." onkeydown="handleChatKey(event)">
+            <button class="btn btn-primary btn-sm" onclick="sendChat()" id="chat-send-btn">Send</button>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script src="js/app.js"></script>
+  <script>
+    let currentMode = 'filters';
+    let selectedColors = ['Black'];
+    let selectedOccasion = 'Casual';
+    let selectedStyle = 'Casual';
+    let selectedSeason = 'Any Season';
+    let scanImageBase64 = null;
+    let chatHistory = [];
+
+    // ── Mode Switching ──
+    function switchMode(mode, btn) {
+      document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      document.querySelectorAll('.mode-panel').forEach(p => p.classList.remove('active'));
+      document.getElementById(`mode-${mode}`).classList.add('active');
+      document.querySelectorAll('.content-panel').forEach(p => p.classList.add('hidden'));
+      document.getElementById(`panel-${mode}`).classList.remove('hidden');
+      currentMode = mode;
+    }
+
+    // ── Single-select chips ──
+    function initSingleChips(containerId, callback) {
+      document.getElementById(containerId).querySelectorAll('.chip').forEach(chip => {
+        chip.addEventListener('click', () => {
+          document.getElementById(containerId).querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+          chip.classList.add('active');
+          if (callback) callback(chip.dataset.value);
+        });
+      });
+    }
+
+    // ── Multi-select color chips ──
+    document.querySelectorAll('.chip-color').forEach(chip => {
+      chip.addEventListener('click', () => {
+        chip.classList.toggle('active');
+        const value = chip.dataset.value;
+        if (chip.classList.contains('active')) {
+          if (!selectedColors.includes(value)) selectedColors.push(value);
+        } else {
+          selectedColors = selectedColors.filter(c => c !== value);
+        }
+      });
+    });
+
+    initSingleChips('occasion-chips', v => selectedOccasion = v);
+    initSingleChips('style-chips', v => selectedStyle = v);
+    initSingleChips('season-chips', v => selectedSeason = v);
+
+    function updateBudget() {
+      const min = parseInt(document.getElementById('budget-min').value);
+      const max = parseInt(document.getElementById('budget-max').value);
+      const lo = Math.min(min, max);
+      const hi = Math.max(min, max);
+      document.getElementById('budget-display').textContent = `$${lo} – $${hi === 500 ? '500+' : hi}`;
+    }
+
+    // ── Generate Outfit Recommendations ──
+    async function generateRecommendations() {
+      const btn = document.getElementById('generate-btn');
+      btn.classList.add('btn-loading');
+      btn.disabled = true;
+
+      const min = parseInt(document.getElementById('budget-min').value);
+      const max = parseInt(document.getElementById('budget-max').value);
+      const budget = `$${Math.min(min,max)} - $${Math.max(min,max) === 500 ? '500+' : Math.max(min,max)}`;
+
+      showLoading('StyleAI is designing your outfits...');
+
+      try {
+        const data = await API.post('/ai/recommend', {
+          occasion: selectedOccasion,
+          style: selectedStyle,
+          colors: selectedColors,
+          budget,
+          season: selectedSeason,
+          gender: document.getElementById('gender-select').value,
+          bodyType: document.getElementById('body-type-select').value,
+          materialPreference: document.getElementById('material-select').value,
+          additionalNotes: document.getElementById('notes-input').value
+        });
+
+        storeResults('last_recommendations', data);
+        renderFilterResults(data);
+        showToast('AI outfits generated! 🎉', 'success');
+      } catch (err) {
+        showToast(`AI Error: ${err.message}`, 'error');
+        document.getElementById('filter-results').innerHTML = `
+          <div class="card text-center" style="padding:40px;">
+            <p style="font-size:2rem;margin-bottom:12px;">⚠️</p>
+            <h3>Couldn't generate recommendations</h3>
+            <p style="margin-top:8px;">${err.message}</p>
+            <p style="margin-top:8px;font-size:0.85rem;">Make sure ANTHROPIC_API_KEY is set in your .env file.</p>
+          </div>
+        `;
+      } finally {
+        hideLoading();
+        btn.classList.remove('btn-loading');
+        btn.disabled = false;
+      }
+    }
+
+    function renderFilterResults(data) {
+      const container = document.getElementById('filter-results');
+      const recs = data.recommendations || [];
+
+      let html = '';
+
+      if (data.styleInsight) {
+        html += `
+          <div class="card" style="margin-bottom:24px;background:linear-gradient(135deg,rgba(139,92,246,0.08),rgba(236,72,153,0.05));border-color:rgba(139,92,246,0.2);">
+            <div style="display:flex;gap:12px;align-items:flex-start;">
+              <span style="font-size:1.5rem;">🧠</span>
+              <div>
+                <div style="font-weight:700;margin-bottom:4px;">StyleAI Insight</div>
+                <p style="font-size:0.9rem;">${data.styleInsight}</p>
+              </div>
+            </div>
+          </div>
+        `;
+      }
+
+      html += `<div class="results-grid">`;
+      recs.forEach((rec, i) => {
+        html += `
+          <div class="outfit-result-card" data-rec-id="${i}">
+            <div class="outfit-card-top">
+              <div class="flex-between" style="margin-bottom:12px;">
+                <div>
+                  <div style="font-size:0.75rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.05em;">${rec.vibe || 'Outfit'}</div>
+                  <h3 style="margin:2px 0;">${rec.outfitName}</h3>
+                </div>
+                <div style="text-align:right;">
+                  <div style="font-size:1.4rem;font-weight:900;background:var(--gradient-1);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">${rec.styleScore || 90}</div>
+                  <div style="font-size:0.7rem;color:var(--text-muted);">Style Score</div>
+                </div>
+              </div>
+              <p style="font-size:0.85rem;line-height:1.6;">${rec.description}</p>
+              <div style="margin-top:12px;display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+                ${renderColorSwatches(rec.colorPalette)}
+                ${(rec.occasions || []).map(o => `<span class="badge badge-purple">${o}</span>`).join('')}
+              </div>
+            </div>
+            <div class="outfit-card-content">
+              <div class="item-list">
+                ${(rec.items || []).map(item => `
+                  <div class="item-row">
+                    <div class="item-row-left">
+                      <span class="item-type-badge">${item.type}</span>
+                      <span class="item-name">${item.name}</span>
+                    </div>
+                    <span class="item-price">${item.estimatedPrice}</span>
+                  </div>
+                `).join('')}
+              </div>
+              ${rec.stylistTip ? `
+                <div style="margin-top:12px;padding:10px;background:rgba(245,158,11,0.05);border:1px solid rgba(245,158,11,0.15);border-radius:8px;font-size:0.8rem;">
+                  <span style="color:var(--gold-light);font-weight:600;">💡 Stylist Tip: </span>${rec.stylistTip}
+                </div>
+              ` : ''}
+              <div style="margin-top:12px;display:flex;gap:8px;">
+                <button class="btn btn-primary btn-sm" style="flex:1;" onclick="viewPrices(${i})">
+                  💰 Compare Prices
+                </button>
+                <button class="btn btn-ghost btn-sm" onclick="saveOutfit(${i}, this)">
+                  🤍 Save
+                </button>
+              </div>
+            </div>
+          </div>
+        `;
+      });
+      html += `</div>`;
+
+      html += `
+        <div class="text-center mt-24">
+          <a href="results.html" class="btn btn-secondary">View Full Price Comparison →</a>
+        </div>
+      `;
+
+      container.innerHTML = html;
+      container.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    function viewPrices(recIdx) {
+      const data = getResults('last_recommendations');
+      if (!data) return showToast('No recommendations found', 'error');
+      const rec = data.recommendations[recIdx];
+      storeResults('active_outfit', rec);
+      window.location.href = 'results.html';
+    }
+
+    async function saveOutfit(recIdx, btn) {
+      const data = getResults('last_recommendations');
+      if (!data) return;
+      const rec = data.recommendations[recIdx];
+      if (!Auth.isLoggedIn()) {
+        showToast('Sign in to save outfits', 'info');
+        return;
+      }
+      try {
+        await API.post('/user/save-outfit', { outfit: rec });
+        btn.textContent = '❤️ Saved';
+        showToast('Outfit saved to your profile!', 'success');
+      } catch (err) {
+        showToast(err.message, 'error');
+      }
+    }
+
+    // ── Environment Scan ──
+    function handleScanUpload(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        scanImageBase64 = e.target.result;
+        const preview = document.getElementById('scan-preview');
+        preview.innerHTML = `
+          <div class="dropzone-preview">
+            <img src="${scanImageBase64}" alt="Preview">
+            <button class="remove-btn" onclick="clearScanImage()">✕</button>
+          </div>
+        `;
+        preview.classList.remove('hidden');
+        document.getElementById('scan-dropzone').style.display = 'none';
+        document.getElementById('scan-btn').disabled = false;
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function clearScanImage() {
+      scanImageBase64 = null;
+      document.getElementById('scan-preview').classList.add('hidden');
+      document.getElementById('scan-dropzone').style.display = '';
+      document.getElementById('scan-btn').disabled = true;
+      document.getElementById('scan-file-input').value = '';
+    }
+
+    function loadExampleScan(type) {
+      const scenarios = {
+        'rooftop-bar': { setting: 'Rooftop Bar', formality: 'smart-casual', occasion: 'Evening Social', climate: 'Warm', vibe: 'Trendy and vibrant city atmosphere' },
+        'beach': { setting: 'Beach', formality: 'casual', occasion: 'Beach Day', climate: 'Hot & Sunny', vibe: 'Relaxed coastal vacation vibes' },
+        'office': { setting: 'Corporate Office', formality: 'business-casual', occasion: 'Work Day', climate: 'Indoor (Air-conditioned)', vibe: 'Professional and modern workplace' },
+        'wedding': { setting: 'Wedding Venue', formality: 'semi-formal', occasion: 'Wedding Guest', climate: 'Indoor Ballroom', vibe: 'Elegant and celebratory' }
+      };
+
+      const scenario = scenarios[type];
+      if (!scenario) return;
+
+      const mockData = { success: true, environmentAnalysis: { ...scenario, confidence: 85 + Math.floor(Math.random()*10), details: `This is a ${scenario.setting.toLowerCase()} environment with ${scenario.vibe.toLowerCase()}.` }, recommendations: generateMockOutfits(scenario.occasion, scenario.formality) };
+      renderScanResults(mockData);
+    }
+
+    async function scanEnvironment() {
+      if (!scanImageBase64) return showToast('Please upload an image first', 'error');
+      const btn = document.getElementById('scan-btn');
+      btn.classList.add('btn-loading');
+      btn.disabled = true;
+      showLoading('AI is analyzing your environment...');
+
+      try {
+        const data = await API.post('/ai/scan-environment', { imageBase64: scanImageBase64 });
+        renderScanResults(data);
+        showToast('Environment analyzed! 📸', 'success');
+      } catch (err) {
+        showToast(`Scan failed: ${err.message}`, 'error');
+      } finally {
+        hideLoading();
+        btn.classList.remove('btn-loading');
+        btn.disabled = false;
+      }
+    }
+
+    function renderScanResults(data) {
+      const container = document.getElementById('scan-results');
+      const env = data.environmentAnalysis;
+      const recs = data.recommendations || [];
+
+      const formalityColors = {
+        'casual': '#10b981', 'smart-casual': '#f59e0b', 'business-casual': '#3b82f6',
+        'semi-formal': '#8b5cf6', 'formal': '#ec4899', 'black-tie': '#f1f5f9'
+      };
+      const formalityColor = formalityColors[env.formality] || '#8b5cf6';
+
+      let html = `
+        <div class="scan-result">
+          <div class="scan-env-banner">
+            <div class="flex-between">
+              <div>
+                <div style="font-size:0.75rem;color:var(--text-muted);text-transform:uppercase;margin-bottom:4px;">Detected Environment</div>
+                <h2>${env.setting}</h2>
+                <p style="margin-top:6px;font-size:0.9rem;">${env.details}</p>
+              </div>
+              <div style="text-align:center;">
+                <div style="font-size:2rem;font-weight:900;color:${formalityColor};">${env.confidence}%</div>
+                <div style="font-size:0.75rem;color:var(--text-muted);">Confidence</div>
+              </div>
+            </div>
+            <div class="confidence-bar"><div class="confidence-fill" style="width:${env.confidence}%"></div></div>
+            <div class="env-details">
+              <div class="env-detail">
+                <div class="label">Formality</div>
+                <div class="value" style="color:${formalityColor};font-size:0.8rem;">${env.formality}</div>
+              </div>
+              <div class="env-detail">
+                <div class="label">Occasion</div>
+                <div class="value" style="font-size:0.8rem;">${env.occasion}</div>
+              </div>
+              <div class="env-detail">
+                <div class="label">Climate</div>
+                <div class="value" style="font-size:0.8rem;">${env.climate}</div>
+              </div>
+            </div>
+          </div>
+          <div style="padding:24px;">
+            ${data.fashionRules ? `
+              <div class="card" style="margin-bottom:20px;background:rgba(6,182,212,0.05);border-color:rgba(6,182,212,0.15);">
+                <div style="font-weight:700;margin-bottom:6px;">📋 Fashion Rules for This Setting</div>
+                <p style="font-size:0.9rem;">${data.fashionRules}</p>
+              </div>
+            ` : ''}
+            <h3 style="margin-bottom:16px;">Recommended Outfits</h3>
+            <div class="results-grid">
+              ${recs.map((rec, i) => `
+                <div class="outfit-result-card">
+                  <div class="outfit-card-top">
+                    <div class="flex-between" style="margin-bottom:10px;">
+                      <h4>${rec.outfitName}</h4>
+                      <span class="badge badge-purple">${rec.vibe}</span>
+                    </div>
+                    <p style="font-size:0.85rem;">${rec.description || rec.whyItWorks || ''}</p>
+                    ${renderColorSwatches(rec.colorPalette)}
+                  </div>
+                  <div class="outfit-card-content">
+                    <div class="item-list">
+                      ${(rec.items || []).map(item => `
+                        <div class="item-row">
+                          <div class="item-row-left">
+                            <span class="item-type-badge">${item.type}</span>
+                            <span class="item-name">${item.name}</span>
+                          </div>
+                          <span class="item-price">${item.estimatedPrice}</span>
+                        </div>
+                      `).join('')}
+                    </div>
+                    ${rec.dressingTip || rec.stylistTip ? `
+                      <div style="margin-top:12px;padding:10px;background:rgba(245,158,11,0.05);border:1px solid rgba(245,158,11,0.15);border-radius:8px;font-size:0.8rem;">
+                        <span style="color:var(--gold-light);font-weight:600;">💡 Tip: </span>${rec.dressingTip || rec.stylistTip}
+                      </div>
+                    ` : ''}
+                    <div style="margin-top:12px;">
+                      <button class="btn btn-primary btn-sm btn-full" onclick="viewScanPrices(${JSON.stringify(rec).replace(/"/g, '&quot;')})">
+                        💰 Compare Prices
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+        </div>
+      `;
+
+      container.innerHTML = html;
+    }
+
+    function viewScanPrices(rec) {
+      storeResults('active_outfit', rec);
+      window.location.href = 'results.html';
+    }
+
+    // ── Chat ──
+    async function sendChat() {
+      const input = document.getElementById('chat-input');
+      const message = input.value.trim();
+      if (!message) return;
+
+      input.value = '';
+      addChatBubble(message, 'user');
+
+      const sendBtn = document.getElementById('chat-send-btn');
+      sendBtn.disabled = true;
+      sendBtn.textContent = '...';
+
+      const typingEl = addChatBubble('...', 'ai', true);
+
+      try {
+        const data = await API.post('/ai/style-chat', { message, conversationHistory: chatHistory });
+        typingEl.remove();
+        chatHistory.push({ role: 'user', content: message });
+        chatHistory.push({ role: 'assistant', content: data.message });
+        addChatBubble(data.message, 'ai');
+      } catch (err) {
+        typingEl.remove();
+        addChatBubble('Sorry, I had trouble connecting. Please check that the server is running.', 'ai');
+      } finally {
+        sendBtn.disabled = false;
+        sendBtn.textContent = 'Send';
+      }
+    }
+
+    function addChatBubble(text, role, isTyping = false) {
+      const messages = document.getElementById('chat-messages');
+      const bubble = document.createElement('div');
+      bubble.className = `chat-bubble ${role}`;
+      bubble.textContent = text;
+      if (isTyping) bubble.classList.add('pulse');
+      messages.appendChild(bubble);
+      messages.scrollTop = messages.scrollHeight;
+      return bubble;
+    }
+
+    function handleChatKey(e) {
+      if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendChat(); }
+    }
+
+    // Mock outfits for demo examples
+    function generateMockOutfits(occasion, formality) {
+      return [
+        {
+          id: '1', outfitName: `Perfect ${occasion} Look`, vibe: 'Chic', styleScore: 92,
+          description: `A perfectly curated outfit for ${occasion.toLowerCase()} that matches the ${formality} dress code.`,
+          colorPalette: ['#1e1e2e', '#8b5cf6', '#f1f5f9'],
+          items: [
+            { type: 'Top', name: 'Tailored Blouse', estimatedPrice: '$45 - $85', type: 'Top' },
+            { type: 'Bottom', name: 'Structured Trousers', estimatedPrice: '$60 - $120', type: 'Bottom' },
+            { type: 'Shoes', name: 'Classic Pumps', estimatedPrice: '$70 - $150', type: 'Shoes' }
+          ],
+          dressingTip: `For ${occasion.toLowerCase()}, focus on well-fitted pieces that complement the setting.`
+        }
+      ];
+    }
+
+    // Handle URL query params (from trending click)
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('q')) {
+      document.getElementById('notes-input').value = `I'm looking for: ${urlParams.get('q')}`;
+    }
+  </script>
+</body>
+</html>
