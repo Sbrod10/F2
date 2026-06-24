@@ -3,6 +3,7 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const { v4: uuidv4 } = require('uuid');
 const { JWT_SECRET } = require('../middleware/auth');
+const { sendWelcomeEmail } = require('../services/email');
 
 const router = express.Router();
 
@@ -44,6 +45,8 @@ router.post('/register', async (req, res) => {
     userInteractions.set(userId, []);
 
     const token = jwt.sign({ userId, email: user.email, name: user.name }, JWT_SECRET, { expiresIn: '7d' });
+
+    sendWelcomeEmail(user.email, user.name).catch(() => {});
 
     const { password: _, ...safeUser } = user;
     res.status(201).json({ token, user: safeUser, message: 'Account created successfully' });
