@@ -866,9 +866,9 @@
 
       const formalityColors = {
         'casual': '#10b981', 'smart-casual': '#f59e0b', 'business-casual': '#3b82f6',
-        'semi-formal': '#8b5cf6', 'formal': '#ec4899', 'black-tie': '#f1f5f9'
+        'semi-formal': '#3b82f6', 'formal': '#ec4899', 'black-tie': '#f1f5f9'
       };
-      const formalityColor = formalityColors[env.formality] || '#8b5cf6';
+      const formalityColor = formalityColors[env.formality] || '#3b82f6';
 
       let html = `
         <div class="scan-result">
@@ -1008,7 +1008,7 @@
         {
           id: '1', outfitName: `Perfect ${occasion} Look`, vibe: 'Chic', styleScore: 92,
           description: `A perfectly curated outfit for ${occasion.toLowerCase()} that matches the ${formality} dress code.`,
-          colorPalette: ['#1e1e2e', '#8b5cf6', '#f1f5f9'],
+          colorPalette: ['#1e1e2e', '#3b82f6', '#f1f5f9'],
           items: [
             { type: 'Top', name: 'Tailored Blouse', estimatedPrice: '$45 - $85', type: 'Top' },
             { type: 'Bottom', name: 'Structured Trousers', estimatedPrice: '$60 - $120', type: 'Bottom' },
